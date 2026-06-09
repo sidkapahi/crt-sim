@@ -23,7 +23,8 @@ summarizing what you did to `.claude/summary-of-work/`.
 
 ## Summary
 <what changed, key files, any follow-ups>
-\```
+\
+```
 
 ## Commit & PR naming — be literal
 
@@ -53,6 +54,3 @@ BAD:  fix: properly fix mask rendering issues   ← vague, inflated, "properly"
 
 GOOD: Add trim-handle keyboard nudge (arrow keys, 1-frame step)
 BAD:  Enhance trim UX with improved keyboard support   ← "enhance/improved"
-```
-
-**What changed:** removed the `prompts/` reference throughout, added the `## Prompt / ## Summary` format block so the original request is always captured at the top of each summary file. You can also delete the `prompts/` folder from your repo now if it's empty.
