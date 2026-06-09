@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CRT Sim — shader playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="layout" id="app">
+
+  <!-- ===================== LEFT ===================== -->
+  <aside class="sidebar">
+    <div class="topline">
+      <div>
+        <h1>CRT Sim</h1>
+        <p class="tagline">A CRT shader playground. Load a clip, dial in the curve and glow, export it.</p>
+      </div>
+      <div class="brandicons">
+        <a class="brandbtn coffeebtn" id="b_coffee" href="https://buymeacoffee.com/sidkapahi" target="_blank" rel="noopener noreferrer" title="Buy me a coffee" aria-label="Buy me a coffee">
+          <svg viewBox="0 0 256 256" fill="currentColor"><path d="M212,76H32A12,12,0,0,0,20,88v48a100.24,100.24,0,0,0,26.73,68H32a12,12,0,0,0,0,24H208a12,12,0,0,0,0-24H193.27a100.75,100.75,0,0,0,20-32A44,44,0,0,0,256,128v-8A44.05,44.05,0,0,0,212,76Zm-16,60a76.27,76.27,0,0,1-42,68H86a76.27,76.27,0,0,1-42-68V100H196Zm36-8a20,20,0,0,1-12.57,18.55A97.17,97.17,0,0,0,220,136V101.68A20,20,0,0,1,232,120ZM68,48V24a12,12,0,0,1,24,0V48a12,12,0,0,1-24,0Zm40,0V24a12,12,0,0,1,24,0V48a12,12,0,0,1-24,0Zm40,0V24a12,12,0,0,1,24,0V48a12,12,0,0,1-24,0Z"/></svg>
+        </a>
+        <a class="brandbtn githubbtn" id="b_github" href="https://github.com/sidkapahi/crt-sim" target="_blank" rel="noopener noreferrer" title="View on GitHub" aria-label="GitHub repository">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="import-block">
+      <button class="import-btn" id="b_import">
+        <svg viewBox="0 0 256 256" fill="currentColor"><path d="M74.34,85.66a8,8,0,0,1,0-11.32l48-48a8,8,0,0,1,11.32,0l48,48a8,8,0,0,1-11.32,11.32L136,49.66V152a8,8,0,0,1-16,0V49.66L85.66,85.66A8,8,0,0,1,74.34,85.66ZM240,136v64a16,16,0,0,1-16,16H32a16,16,0,0,1-16-16V136a8,8,0,0,1,16,0v64H224V136a8,8,0,0,1,16,0Z"/></svg>
+        <span>Upload</span>
+      </button>
+      <p class="import-cap">.mp4, .webm, .mov accepted</p>
+    </div>
+
+    <!-- EFFECTS -->
+    <section class="card">
+      <div class="cardhead">
+        <h2 class="sectlabel">Effects</h2>
+        <div class="headbtns">
+          <button id="b_loadpreset" class="headbtn"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M248.23,112.31A20,20,0,0,0,232,104H220V88a20,20,0,0,0-20-20H132L105.34,48a20.12,20.12,0,0,0-12-4H40A20,20,0,0,0,20,64V208a12,12,0,0,0,12,12H211.1a12,12,0,0,0,11.33-8l28.49-81.47.06-.17A20,20,0,0,0,248.23,112.31ZM92,68l28.8,21.6A12,12,0,0,0,128,92h68v12H69.77a20,20,0,0,0-18.94,13.58L44,137.15V68ZM202.59,196H48.89l23.72-68H226.37Z"/></svg><span>Load</span></button>
+          <button class="iconbtn" id="b_reset" title="Reset all effects to 0" aria-label="Reset effects">
+            <svg viewBox="0 0 256 256" fill="currentColor"><path d="M228,128a100,100,0,0,1-98.66,100H128a99.39,99.39,0,0,1-68.62-27.29,12,12,0,0,1,16.48-17.45,76,76,0,1,0-1.57-109c-.13.13-.25.25-.39.37L54.89,92H72a12,12,0,0,1,0,24H24a12,12,0,0,1-12-12V56a12,12,0,0,1,24,0V76.72L57.48,57.06A100,100,0,0,1,228,128Z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="ctl"><label>Curvature</label><input type="range" id="s_curve" min="0" max="100" value="0"><input class="num" id="n_curve" type="number" min="0" max="1" step="0.01" value="0.00"></div>
+      <div class="ctl"><label>Scanlines</label><input type="range" id="s_scan" min="0" max="100" value="45"><input class="num" id="n_scan" type="number" min="0" max="1" step="0.01" value="0.45"></div>
+      <div class="ctl"><label>Phosphor</label><input type="range" id="s_mask" min="0" max="100" value="40"><input class="num" id="n_mask" type="number" min="0" max="1" step="0.01" value="0.40"></div>
+      <div class="ctl"><label>Vignette</label><input type="range" id="s_vig" min="0" max="100" value="45"><input class="num" id="n_vig" type="number" min="0" max="1" step="0.01" value="0.45"></div>
+      <div class="ctl"><label>Bloom</label><input type="range" id="s_bloom" min="0" max="100" value="60"><input class="num" id="n_bloom" type="number" min="0" max="1" step="0.01" value="0.60"></div>
+      <div class="pair">
+        <button class="active" id="b_effect" title="Toggle CRT effect" aria-label="Toggle effect"><span class="ico"></span><span>Effect</span></button>
+        <button id="b_savepreset"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M222.14,69.17,186.83,33.86A19.86,19.86,0,0,0,172.69,28H48A20,20,0,0,0,28,48V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V83.31A19.86,19.86,0,0,0,222.14,69.17ZM164,204H92V160h72Zm40,0H188V156a20,20,0,0,0-20-20H88a20,20,0,0,0-20,20v48H52V52H171l33,33ZM164,84a12,12,0,0,1-12,12H96a12,12,0,0,1,0-24h56A12,12,0,0,1,164,84Z"/></svg><span>Save</span></button>
+      </div>
+    </section>
+
+    <!-- EXPORT (anchored to the bottom) -->
+    <div class="export-group">
+      <section class="card">
+        <h2 class="sectlabel">Export</h2>
+        <div class="seg-row">
+          <span class="seglabel">File format</span>
+          <div class="seg" id="fmtSeg" role="tablist" aria-label="Export format">
+            <button class="chip active" data-fmt="mp4">MP4</button>
+            <button class="chip" data-fmt="gif">GIF</button>
+            <button class="chip" data-fmt="mov">MOV</button>
+          </div>
+        </div>
+        <p class="export-cap"><b>Exports the trimmed range only.</b> MP4/MOV use the browser's built-in H.264 encoder (best in Chrome/Edge), falling back to VP9/AV1 if H.264 isn't available.</p>
+        <div id="exp_status"></div>
+      </section>
+
+      <button class="import-btn" id="b_export">
+        <svg viewBox="0 0 256 256" fill="currentColor"><path d="M74.34,141.66a8,8,0,0,1,11.32-11.32L120,164.69V32a8,8,0,0,1,16,0V164.69l34.34-34.35a8,8,0,0,1,11.32,11.32l-48,48a8,8,0,0,1-11.32,0ZM240,136v64a16,16,0,0,1-16,16H32a16,16,0,0,1-16-16V136a8,8,0,0,1,16,0v64H224V136a8,8,0,0,1,16,0Z"/></svg>
+        <span class="export-label">Export</span>
+      </button>
+
+      <!-- codec progress (export only) -->
+      <div class="codecbar" id="codecBar">
+        <div class="codectrack"><div class="codecfill" id="codecFill"></div></div>
+        <span class="codeclabel" id="codecLabel"></span>
+      </div>
+    </div>
+
+    <p class="footer">Designed &amp; Vibe Coded with <span class="heart">&hearts;</span> in Toronto</p>
+  </aside>
+
+  <!-- ===================== RIGHT ===================== -->
+  <section class="right">
+
+    <div class="stage">
+      <div class="stage-tl">
+        <button class="iconbtn" id="b_crop" title="Crop" aria-label="Crop"></button>
+        <div class="aspect-seg" id="aspectSeg" role="tablist" aria-label="Aspect ratio">
+          <button class="chip active" data-ar="640:360">16:9</button>
+          <button class="chip" data-ar="640:480">4:3</button>
+        </div>
+      </div>
+
+      <div id="previewStage">
+        <div class="screenwrap" id="screenWrap">
+          <canvas id="screen" width="640" height="360"></canvas>
+          <div class="ppind" id="ppInd"></div>
+        </div>
+      </div>
+
+      <div id="cropStage">
+        <div class="cropwrap" id="cropWrap">
+          <div class="cropbox" id="cropBox">
+            <div class="thirds"></div>
+            <div class="handle" data-c="tl"></div>
+            <div class="handle" data-c="tr"></div>
+            <div class="handle" data-c="bl"></div>
+            <div class="handle" data-c="br"></div>
+          </div>
+        </div>
+        <div class="croprow">
+          <button id="b_applycrop" class="primary">Apply crop</button>
+          <button id="b_fullcrop">Fill frame</button>
+          <span class="ar">crop locked to aspect</span>
+        </div>
+      </div>
+
+      <div class="bottombar disabled" id="bottomBar">
+        <button id="t_play" aria-label="Play / pause"></button>
+        <span class="timecode" id="t_read"><span class="cur">00:00</span><span class="tot"> / 00:00</span></span>
+        <div class="track" id="t_track">
+          <div class="trange" id="t_range"></div>
+          <div class="playhead" id="t_head"></div>
+          <div class="thandle" id="t_h0"></div>
+          <div class="thandle" id="t_h1"></div>
+        </div>
+        <div class="audioctl" id="audioCtl">
+          <button id="b_mute" aria-label="Mute / unmute"></button>
+          <input type="range" id="s_vol" min="0" max="100" value="100" title="Volume">
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<div id="vidHolder" class="offscreen"></div>
+
+<script>
+(function(){
+  // ---- inline Phosphor icon markup (bold = inactive, fill = active) ----
+  var ICON = {
+    sparkleBold:'<svg viewBox="0 0 256 256" fill="currentColor"><path d="M199,125.31l-49.88-18.39L130.69,57a19.92,19.92,0,0,0-37.38,0L74.92,106.92,25,125.31a19.92,19.92,0,0,0,0,37.38l49.88,18.39L93.31,231a19.92,19.92,0,0,0,37.38,0l18.39-49.88L199,162.69a19.92,19.92,0,0,0,0-37.38Zm-63.38,35.16a12,12,0,0,0-7.11,7.11L112,212.28l-16.47-44.7a12,12,0,0,0-7.11-7.11L43.72,144l44.7-16.47a12,12,0,0,0,7.11-7.11L112,75.72l16.47,44.7a12,12,0,0,0,7.11,7.11L180.28,144ZM140,40a12,12,0,0,1,12-12h12V16a12,12,0,0,1,24,0V28h12a12,12,0,0,1,0,24H188V64a12,12,0,0,1-24,0V52H152A12,12,0,0,1,140,40ZM252,88a12,12,0,0,1-12,12h-4v4a12,12,0,0,1-24,0v-4h-4a12,12,0,0,1,0-24h4V72a12,12,0,0,1,24,0v4h4A12,12,0,0,1,252,88Z"/></svg>',
+    sparkleFill:'<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,144a15.78,15.78,0,0,1-10.42,14.94L146,178l-19,51.62a15.92,15.92,0,0,1-29.88,0L78,178l-51.62-19a15.92,15.92,0,0,1,0-29.88L78,110l19-51.62a15.92,15.92,0,0,1,29.88,0L146,110l51.62,19A15.78,15.78,0,0,1,208,144ZM152,48h16V64a8,8,0,0,0,16,0V48h16a8,8,0,0,0,0-16H184V16a8,8,0,0,0-16,0V32H152a8,8,0,0,0,0,16Zm88,32h-8V72a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0V96h8a8,8,0,0,0,0-16Z"/></svg>',
+    tvBold:'<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,60H157l27.52-27.52a12,12,0,0,0-17-17L128,55,88.49,15.51a12,12,0,0,0-17,17L99,60H40A20,20,0,0,0,20,80V200a20,20,0,0,0,20,20H216a20,20,0,0,0,20-20V80A20,20,0,0,0,216,60Zm-4,136H44V84H212Z"/></svg>',
+    tvFill:'<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,64H147.31l34.35-34.34a8,8,0,1,0-11.32-11.32L128,60.69,85.66,18.34A8,8,0,0,0,74.34,29.66L108.69,64H40A16,16,0,0,0,24,80V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V80A16,16,0,0,0,216,64Zm0,136H40V80H216V200ZM200,100v80a4,4,0,0,1-4,4H60a4,4,0,0,1-4-4V100a4,4,0,0,1,4-4H196A4,4,0,0,1,200,100Z"/></svg>',
+    cropBold:'<svg viewBox="0 0 256 256" fill="currentColor"><path d="M244,192a12,12,0,0,1-12,12H204v28a12,12,0,0,1-24,0V204H64a12,12,0,0,1-12-12V76H24a12,12,0,0,1,0-24H52V24a12,12,0,0,1,24,0V180H232A12,12,0,0,1,244,192ZM104,76h76v76a12,12,0,0,0,24,0V64a12,12,0,0,0-12-12H104a12,12,0,0,0,0,24Z"/></svg>',
+    cropFill:'<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM120,80h48a8,8,0,0,1,8,8v48a8,8,0,0,1-16,0V96H120a8,8,0,0,1,0-16Zm72,96H176v16a8,8,0,0,1-16,0V176H88a8,8,0,0,1-8-8V96H64a8,8,0,0,1,0-16H80V64a8,8,0,0,1,16,0v96h96a8,8,0,0,1,0,16Z"/></svg>',
+    play:'<svg viewBox="0 0 256 256" fill="currentColor"><path d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"/></svg>',
+    pause:'<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z"/></svg>',
+    volOn:'<svg viewBox="0 0 256 256" fill="currentColor"><path d="M157.27,21.22a12,12,0,0,0-12.64,1.31L75.88,76H32A20,20,0,0,0,12,96v64a20,20,0,0,0,20,20H75.88l68.75,53.47A12,12,0,0,0,164,224V32A12,12,0,0,0,157.27,21.22ZM36,100H68v56H36Zm104,99.46L92,162.13V93.87l48-37.33ZM212,128a44,44,0,0,1-11,29.11,12,12,0,1,1-18-15.88,20,20,0,0,0,0-26.43,12,12,0,0,1,18-15.86A43.94,43.94,0,0,1,212,128Zm40,0a83.87,83.87,0,0,1-21.39,56,12,12,0,0,1-17.89-16,60,60,0,0,0,0-80,12,12,0,1,1,17.88-16A83.87,83.87,0,0,1,252,128Z"/></svg>',
+    volOff:'<svg viewBox="0 0 256 256" fill="currentColor"><path d="M157.27,21.22a12,12,0,0,0-12.64,1.31L75.88,76H32A20,20,0,0,0,12,96v64a20,20,0,0,0,20,20H75.88l68.75,53.47A12,12,0,0,0,164,224V32A12,12,0,0,0,157.27,21.22ZM36,100H68v56H36Zm104,99.47L92,162.12V93.88l48-37.34Zm108.49-55.95a12,12,0,0,1-17,17L216,145l-15.51,15.52a12,12,0,0,1-17-17L199,128l-15.52-15.51a12,12,0,0,1,17-17L216,111l15.51-15.51a12,12,0,0,1,17,17L233,128Z"/></svg>'
+  };
+
+  var cv = document.getElementById('screen');
+  var gl = cv.getContext('webgl', {preserveDrawingBuffer:true, premultipliedAlpha:false});
+  if(!gl){ document.getElementById('app').innerHTML = '<p class="glerror">WebGL is not available in this browser.</p>'; return; }
+
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+  function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
+
+  function compile(type, src){
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s), src);
+    return s;
+  }
+  function program(vs, fs){
+    var p = gl.createProgram();
+    gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
+    gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(p);
+    if(!gl.getProgramParameter(p, gl.LINK_STATUS)) console.error(gl.getProgramInfoLog(p));
+    return p;
+  }
+
+  var VS = 'attribute vec2 p; varying vec2 v; void main(){ v=p*0.5+0.5; gl_Position=vec4(p,0.0,1.0); }';
+
+  var F_SCENE = [
+    'precision mediump float;',
+    'uniform sampler2D tex; uniform float curveDiv,scan,mask,vig,on,lines; uniform vec2 cropMin,cropMax;',
+    'varying vec2 v;',
+    'vec2 curveUV(vec2 uv){ uv=uv*2.0-1.0; vec2 o=abs(uv.yx)/vec2(curveDiv); uv=uv+uv*o*o; return uv*0.5+0.5; }',
+    'void main(){',
+    '  if(on<0.5){ gl_FragColor=texture2D(tex, mix(cropMin,cropMax,v)); return; }',
+    '  vec2 uv=curveUV(v);',
+    '  if(uv.x<0.0||uv.x>1.0||uv.y<0.0||uv.y>1.0){ gl_FragColor=vec4(0.0,0.0,0.0,1.0); return; }',
+    '  vec2 cuv=mix(cropMin,cropMax,uv);',
+    '  vec3 col=texture2D(tex,cuv).rgb;',
+    '  float s=sin(uv.y*lines*3.14159)*0.5+0.5; col*=1.0-scan*(1.0-s);',
+    '  float m=mod(floor(uv.x*200.0),3.0); vec3 mc;',
+    '  if(m<1.0)mc=vec3(1.0,0.5,0.5); else if(m<2.0)mc=vec3(0.5,1.0,0.5); else mc=vec3(0.5,0.5,1.0);',
+    '  col*=mix(vec3(1.0),mc,mask);',
+    '  vec2 d=uv-0.5; col*=1.0-dot(d,d)*vig*2.2;',
+    '  gl_FragColor=vec4(col,1.0);',
+    '}'
+  ].join('\n');
+
+  var F_BRIGHT = [
+    'precision mediump float;',
+    'uniform sampler2D tex; uniform float threshold; varying vec2 v;',
+    'void main(){',
+    '  vec3 c=texture2D(tex,v).rgb;',
+    '  float br=max(c.r,max(c.g,c.b));',
+    '  float k=max(br-threshold,0.0)/max(br,0.0001);',
+    '  gl_FragColor=vec4(c*k,1.0);',
+    '}'
+  ].join('\n');
+
+  var F_BLUR = [
+    'precision mediump float;',
+    'uniform sampler2D tex; uniform vec2 dir; uniform vec2 texel; varying vec2 v;',
+    'void main(){',
+    '  vec3 s=texture2D(tex,v).rgb*0.227027;',
+    '  vec2 o1=dir*texel*1.384615; vec2 o2=dir*texel*3.230769;',
+    '  s+=texture2D(tex,v+o1).rgb*0.316216;',
+    '  s+=texture2D(tex,v-o1).rgb*0.316216;',
+    '  s+=texture2D(tex,v+o2).rgb*0.070270;',
+    '  s+=texture2D(tex,v-o2).rgb*0.070270;',
+    '  gl_FragColor=vec4(s,1.0);',
+    '}'
+  ].join('\n');
+
+  var F_FINAL = [
+    'precision mediump float;',
+    'uniform sampler2D scene; uniform sampler2D bloom; uniform float strength; varying vec2 v;',
+    'void main(){',
+    '  vec3 a=texture2D(scene,v).rgb;',
+    '  vec3 b=texture2D(bloom,v).rgb;',
+    '  gl_FragColor=vec4(a+b*strength,1.0);',
+    '}'
+  ].join('\n');
+
+  var pScene=program(VS,F_SCENE), pBright=program(VS,F_BRIGHT), pBlur=program(VS,F_BLUR), pFinal=program(VS,F_FINAL);
+
+  var uScene={};
+  ['curveDiv','scan','mask','vig','on','lines','tex','cropMin','cropMax'].forEach(function(k){ uScene[k]=gl.getUniformLocation(pScene,k); });
+  var uBright={ tex:gl.getUniformLocation(pBright,'tex'), threshold:gl.getUniformLocation(pBright,'threshold') };
+  var uBlur={ tex:gl.getUniformLocation(pBlur,'tex'), dir:gl.getUniformLocation(pBlur,'dir'), texel:gl.getUniformLocation(pBlur,'texel') };
+  var uFinal={ scene:gl.getUniformLocation(pFinal,'scene'), bloom:gl.getUniformLocation(pFinal,'bloom'), strength:gl.getUniformLocation(pFinal,'strength') };
+
+  var quad=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+  function bindQuad(prog){
+    var loc=gl.getAttribLocation(prog,'p');
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  }
+
+  function makeTex(){
+    var t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    return t;
+  }
+  var srcTex=makeTex();
+  function uploadSource(src){
+    gl.bindTexture(gl.TEXTURE_2D, srcTex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    try{ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,src); }catch(e){}
+  }
+
+  function makeTarget(w,h){
+    var t=makeTex();
+    gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+    var f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    return {tex:t,fbo:f,w:w,h:h};
+  }
+  var scene,brightT,blurA,blurB;
+  function makeTargets(w,h){
+    [scene,brightT,blurA,blurB].forEach(function(o){ if(o){ gl.deleteTexture(o.tex); gl.deleteFramebuffer(o.fbo); } });
+    scene=makeTarget(w,h);
+    var hw=Math.max(2,Math.floor(w/2)), hh=Math.max(2,Math.floor(h/2));
+    brightT=makeTarget(hw,hh); blurA=makeTarget(hw,hh); blurB=makeTarget(hw,hh);
+  }
+
+  var on=1, curveDiv=4, scan=0.45, mask=0.40, vig=0.45, lines=240, bloomAmt=0.60, threshold=0.55;
+  var cropMinArr=[0,0], cropMaxArr=[1,1];
+  function setCurve(val){ curveDiv = val<0.02 ? 1000.0 : 2.4/val; }
+  setCurve(0);
+
+  function drawTo(target, prog){
+    gl.bindFramebuffer(gl.FRAMEBUFFER, target?target.fbo:null);
+    gl.viewport(0,0, target?target.w:cv.width, target?target.h:cv.height);
+    gl.useProgram(prog);
+    bindQuad(prog);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  }
+
+  function render(){
+    gl.useProgram(pScene);
+    gl.uniform1f(uScene.curveDiv,curveDiv); gl.uniform1f(uScene.scan,scan);
+    gl.uniform1f(uScene.mask,mask); gl.uniform1f(uScene.vig,vig);
+    gl.uniform1f(uScene.on,on); gl.uniform1f(uScene.lines,lines);
+    gl.uniform2f(uScene.cropMin, cropMinArr[0], cropMinArr[1]);
+    gl.uniform2f(uScene.cropMax, cropMaxArr[0], cropMaxArr[1]);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, srcTex); gl.uniform1i(uScene.tex,0);
+    drawTo(scene, pScene);
+
+    var useBloom = on>0.5 && bloomAmt>0.001;
+    if(useBloom){
+      gl.useProgram(pBright);
+      gl.uniform1f(uBright.threshold, threshold);
+      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, scene.tex); gl.uniform1i(uBright.tex,0);
+      drawTo(brightT, pBright);
+
+      var srcB = brightT;
+      for(var i=0;i<2;i++){
+        gl.useProgram(pBlur);
+        gl.uniform2f(uBlur.texel, 1.0/srcB.w, 1.0/srcB.h);
+        gl.uniform2f(uBlur.dir, 1.0, 0.0);
+        gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, srcB.tex); gl.uniform1i(uBlur.tex,0);
+        drawTo(blurA, pBlur);
+        gl.uniform2f(uBlur.texel, 1.0/blurA.w, 1.0/blurA.h);
+        gl.uniform2f(uBlur.dir, 0.0, 1.0);
+        gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, blurA.tex); gl.uniform1i(uBlur.tex,0);
+        drawTo(blurB, pBlur);
+        srcB = blurB;
+      }
+    }
+
+    gl.useProgram(pFinal);
+    gl.uniform1f(uFinal.strength, useBloom?bloomAmt:0.0);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, scene.tex); gl.uniform1i(uFinal.scene,0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, (useBloom?blurB:scene).tex); gl.uniform1i(uFinal.bloom,1);
+    drawTo(null, pFinal);
+  }
+
+  function makePattern(){
+    var w=cv.width,h=cv.height;
+    var c=document.createElement('canvas'); c.width=w; c.height=h;
+    var x=c.getContext('2d');
+    x.fillStyle='#0a0a0a'; x.fillRect(0,0,w,h);
+    var bars=['#c8c8c8','#c8c800','#00c8c8','#00c800','#c800c8','#c80000','#0000c8'];
+    var barH=Math.round(h*0.3);
+    for(var i=0;i<7;i++){ x.fillStyle=bars[i]; x.fillRect(i*w/7,0,w/7+1,barH); }
+    x.strokeStyle='rgba(255,255,255,0.85)'; x.lineWidth=2;
+    for(var gx=0;gx<=w;gx+=40){ x.beginPath(); x.moveTo(gx,barH); x.lineTo(gx,h); x.stroke(); }
+    for(var gy=barH;gy<=h;gy+=40){ x.beginPath(); x.moveTo(0,gy); x.lineTo(w,gy); x.stroke(); }
+    x.strokeStyle='#fff'; x.lineWidth=3; x.strokeRect(2,2,w-4,h-4);
+    x.fillStyle='#fff'; x.textAlign='center';
+    x.font='bold '+Math.round(h*0.09)+'px monospace';
+    x.fillText('OLED → CRT', w/2, h*0.64);
+    x.font=Math.round(h*0.04)+'px monospace'; x.fillStyle='rgba(255,255,255,0.75)';
+    x.fillText('bright areas bloom', w/2, h*0.74);
+    uploadSource(c);
+  }
+
+  function targetAspect(){ return cv.width/cv.height; }
+  function centeredCropNorm(SW,SH,a){
+    var cw,ch,x,y, ma=SW/SH;
+    if(ma>=a){ ch=SH; cw=ch*a; } else { cw=SW; ch=cw/a; }
+    x=(SW-cw)/2; y=(SH-ch)/2;
+    return { min:[x/SW, 1-(y+ch)/SH], max:[(x+cw)/SW, 1-y/SH] };
+  }
+
+  var mode='pattern', vid=null, raf=null, srcW=0, srcH=0;
+  var cropStage=document.getElementById('cropStage');
+  var previewStage=document.getElementById('previewStage');
+  var cropWrap=document.getElementById('cropWrap');
+  var cropBox=document.getElementById('cropBox');
+  var vidHolder=document.getElementById('vidHolder');
+  var fileNameEl=document.getElementById('fileName')||{};
+  var bottomBar=document.getElementById('bottomBar');
+
+  var trackEl=document.getElementById('t_track');
+  var trangeEl=document.getElementById('t_range');
+  var playheadEl=document.getElementById('t_head');
+  var th0=document.getElementById('t_h0');
+  var th1=document.getElementById('t_h1');
+  var treadEl=document.getElementById('t_read');
+  var tplayBtn=document.getElementById('t_play');
+  var dur=0, trimStart=0, trimEnd=0, trimRAF=null;
+
+  function fmtClock(s){
+    s=Math.max(0,Math.floor(s||0));
+    var h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60;
+    var mm=String(m).padStart(2,'0'), sec=String(ss).padStart(2,'0');
+    return (h>0 ? String(h).padStart(2,'0')+':' : '')+mm+':'+sec;
+  }
+  function updateReadout(){
+    var cur = (dur>0) ? fmtClock(Math.max(0,trimEnd-trimStart)) : '00:00';
+    var tot = (dur>0) ? fmtClock(dur) : '00:00';
+    treadEl.innerHTML='<span class="cur">'+cur+'</span><span class="tot"> / '+tot+'</span>';
+  }
+  function layoutTrim(){
+    if(!(dur>0)){ trangeEl.style.width='0%'; updateReadout(); return; }
+    var a=trimStart/dur*100, b=trimEnd/dur*100;
+    trangeEl.style.left=a+'%'; trangeEl.style.width=Math.max(0,b-a)+'%';
+    th0.style.left=a+'%'; th1.style.left=b+'%';
+    updateReadout();
+  }
+  function updateHead(){ if(vid && dur>0){ playheadEl.style.left=(clamp(vid.currentTime,0,dur)/dur*100)+'%'; } }
+  function enforceTrim(){ if(exporting) return; if(mode==='video'&&vid&&trimEnd>trimStart){ if(vid.currentTime>=trimEnd-0.02 || vid.currentTime<trimStart-0.15){ try{ vid.currentTime=trimStart; }catch(e){} } } }
+  function trimTick(){ updateHead(); enforceTrim(); trimRAF=requestAnimationFrame(trimTick); }
+  function startTrimTick(){ stopTrimTick(); trimRAF=requestAnimationFrame(trimTick); }
+  function stopTrimTick(){ if(trimRAF){ cancelAnimationFrame(trimRAF); trimRAF=null; } }
+
+  function trackFrac(e){ var r=trackEl.getBoundingClientRect(); return clamp((e.clientX-r.left)/r.width,0,1); }
+  var tdrag=null;
+  th0.addEventListener('pointerdown',function(e){ e.preventDefault(); e.stopPropagation(); th0.setPointerCapture(e.pointerId); tdrag='s'; });
+  th1.addEventListener('pointerdown',function(e){ e.preventDefault(); e.stopPropagation(); th1.setPointerCapture(e.pointerId); tdrag='e'; });
+  trackEl.addEventListener('pointerdown',function(e){ if(e.target===th0||e.target===th1) return; if(!(dur>0)) return; var t=clamp(trackFrac(e)*dur,trimStart,trimEnd); try{ vid.currentTime=t; }catch(_){} updateHead(); });
+  window.addEventListener('pointermove',function(e){
+    if(!tdrag||!(dur>0)) return;
+    var t=trackFrac(e)*dur;
+    if(tdrag==='s'){ trimStart=clamp(t,0,trimEnd-0.2); try{ vid.currentTime=trimStart; }catch(_){} }
+    else { trimEnd=clamp(t,trimStart+0.2,dur); try{ vid.currentTime=trimEnd; }catch(_){} }
+    layoutTrim(); updateHead();
+  });
+  window.addEventListener('pointerup',function(){ tdrag=null; });
+  tplayBtn.addEventListener('click',function(){
+    if(!vid) return;
+    if(vid.paused){ if(vid.currentTime<trimStart||vid.currentTime>=trimEnd){ try{ vid.currentTime=trimStart; }catch(_){} } vid.play(); }
+    else { vid.pause(); }
+    updatePlayUI();
+  });
+  function updatePlayUI(){ tplayBtn.innerHTML = (vid && !vid.paused) ? ICON.pause : ICON.play; }
+
+  function ensureBox(tries){
+    tries = tries||0;
+    if(!vid){ return; }
+    var rect=vid.getBoundingClientRect();
+    if((!rect.width||!rect.height) && tries<40){ requestAnimationFrame(function(){ ensureBox(tries+1); }); return; }
+    defaultBox();
+  }
+
+  function stopLoop(){ if(raf){ cancelAnimationFrame(raf); raf=null; } }
+  function loop(){ if(mode==='video'&&vid&&vid.readyState>=2&&vid.videoWidth>0){ enforceTrim(); uploadSource(vid); } render(); raf=requestAnimationFrame(loop); }
+
+  function showCrop(){ cropStage.style.display='flex'; previewStage.style.display='none'; }
+  function showPreview(){ cropStage.style.display='none'; previewStage.style.display='flex'; }
+
+  function setBox(l,t,w,h){ cropBox.style.left=l+'px'; cropBox.style.top=t+'px'; cropBox.style.width=w+'px'; cropBox.style.height=h+'px'; }
+  function getBox(){ return {l:parseFloat(cropBox.style.left)||0, t:parseFloat(cropBox.style.top)||0, w:parseFloat(cropBox.style.width)||0, h:parseFloat(cropBox.style.height)||0}; }
+  function defaultBox(){
+    if(!vid){ return; }
+    var rect=vid.getBoundingClientRect();
+    var CW=rect.width, CH=rect.height, a=targetAspect(), w,h;
+    if(!CW||!CH){ return; }
+    if(CW/CH>=a){ h=CH; w=h*a; } else { w=CW; h=w/a; }
+    setBox((CW-w)/2,(CH-h)/2,w,h);
+  }
+
+  var drag=null;
+  cropBox.addEventListener('pointerdown', function(e){
+    if(e.target.classList.contains('handle')) return;
+    e.preventDefault(); cropBox.setPointerCapture(e.pointerId);
+    drag={type:'move', sx:e.clientX, sy:e.clientY, b:getBox()};
+  });
+  Array.prototype.forEach.call(cropBox.querySelectorAll('.handle'), function(hd){
+    hd.addEventListener('pointerdown', function(e){
+      e.preventDefault(); e.stopPropagation(); hd.setPointerCapture(e.pointerId);
+      drag={type:'resize', corner:hd.getAttribute('data-c'), b:getBox()};
+    });
+  });
+  window.addEventListener('pointermove', function(e){
+    if(!drag) return;
+    var rect=cropWrap.getBoundingClientRect();
+    var CW=rect.width, CH=rect.height, a=targetAspect();
+    if(drag.type==='move'){
+      var nl=clamp(drag.b.l+(e.clientX-drag.sx),0,CW-drag.b.w);
+      var nt=clamp(drag.b.t+(e.clientY-drag.sy),0,CH-drag.b.h);
+      setBox(nl,nt,drag.b.w,drag.b.h);
+    } else {
+      var b=drag.b, c=drag.corner;
+      var ax = (c==='br'||c==='tr') ? b.l : b.l+b.w;
+      var ay = (c==='br'||c==='bl') ? b.t : b.t+b.h;
+      var px=clamp(e.clientX-rect.left,0,CW), py=clamp(e.clientY-rect.top,0,CH);
+      var availW = (c==='br'||c==='tr') ? (CW-ax) : ax;
+      var availH = (c==='br'||c==='bl') ? (CH-ay) : ay;
+      var w=clamp(Math.abs(px-ax),40,availW);
+      var h=w/a;
+      if(h>availH){ h=availH; w=h*a; }
+      if(w<40){ w=40; h=w/a; }
+      var nl = (c==='br'||c==='tr') ? ax : ax-w;
+      var nt = (c==='br'||c==='bl') ? ay : ay-h;
+      setBox(nl,nt,w,h);
+    }
+  });
+  window.addEventListener('pointerup', function(){ drag=null; });
+
+  function applyCropFromBox(){
+    var rect=cropWrap.getBoundingClientRect();
+    var CW=rect.width, CH=rect.height, b=getBox();
+    if(!CW||!CH) return;
+    var fxL=b.l/CW, fxR=(b.l+b.w)/CW, fyT=b.t/CH, fyB=(b.t+b.h)/CH;
+    cropMinArr=[fxL, 1-fyB]; cropMaxArr=[fxR, 1-fyT];
+  }
+
+  // ---- crop overlay (video-only), toggled by the crop icon ----
+  var cropBtn=document.getElementById('b_crop');
+  function openCropVideo(){
+    if(mode!=='video' || !vid) return;
+    cropWrap.insertBefore(vid, cropBox);
+    vid.style.display='block';
+    showCrop();
+    cropBtn.classList.add('active'); cropBtn.innerHTML=ICON.cropFill;
+    if(vid.paused){ vid.play(); } updatePlayUI();
+    stopLoop();
+    ensureBox();
+    startTrimTick();
+  }
+  function finishToPreview(){
+    showPreview();
+    cropBtn.classList.remove('active'); cropBtn.innerHTML=ICON.cropBold;
+    if(mode==='video' && vid){
+      vidHolder.appendChild(vid);
+      if(trimEnd>trimStart && (vid.currentTime<trimStart||vid.currentTime>=trimEnd)){ try{ vid.currentTime=trimStart; }catch(e){} }
+      if(vid.paused){ vid.play(); } updatePlayUI();
+      stopLoop(); loop(); startTrimTick();
+    } else { render(); }
+  }
+  document.getElementById('b_applycrop').addEventListener('click', function(){ applyCropFromBox(); finishToPreview(); });
+  document.getElementById('b_fullcrop').addEventListener('click', function(){ cropMinArr=[0,0]; cropMaxArr=[1,1]; finishToPreview(); });
+  cropBtn.addEventListener('click', function(){
+    if(mode!=='video' || !vid){ return; }
+    if(cropStage.style.display==='none' || cropStage.style.display===''){ openCropVideo(); }
+    else { applyCropFromBox(); finishToPreview(); }
+  });
+
+  // ---- import (video only) ----
+  var fVid=document.createElement('input'); fVid.type='file'; fVid.accept='video/mp4,video/webm,video/quicktime';
+  document.getElementById('b_import').addEventListener('click',function(){ fVid.value=''; fVid.click(); });
+
+  function acceptedVideo(f){
+    if(!f) return false;
+    if(/^video\//.test(f.type)) return true;
+    return /\.(mp4|webm|mov|m4v|qt)$/i.test(f.name||'');
+  }
+
+  fVid.addEventListener('change',function(e){
+    var f=e.target.files[0]; if(!f) return;
+    if(!acceptedVideo(f)){ alert('Unsupported file. Please choose a .mp4, .webm, or .mov video.'); return; }
+    stopLoop();
+    vidFile=f; audioBuffer=null; audioDecoded=false;   // cached audio belongs to the previous clip
+    if(!vid){ vid=document.createElement('video'); vid.muted=true; vid.playsInline=true; vid.loop=false; vid.addEventListener('play',reflectPP); vid.addEventListener('pause',reflectPP); }
+    vid.src=URL.createObjectURL(f);
+    vid.muted=prevMuted; vid.volume=prevVol;
+    function onMeta(){
+      mode='video'; srcW=vid.videoWidth; srcH=vid.videoHeight;
+      dur=isFinite(vid.duration)?vid.duration:0; trimStart=0; trimEnd=dur;
+      var c=centeredCropNorm(srcW,srcH,targetAspect()); cropMinArr=c.min; cropMaxArr=c.max;
+      fileNameEl.textContent=f.name;
+      setTvActive(false);
+      setBottomEnabled(true);
+      updateAudioUI();
+      vidHolder.appendChild(vid);
+      showPreview();
+      if(vid.paused){ try{ vid.play(); }catch(_){} }
+      layoutTrim();
+      stopLoop(); loop(); startTrimTick(); updatePlayUI();
+    }
+    if(vid.readyState>=1 && vid.videoWidth){ onMeta(); }
+    else { vid.addEventListener('loadedmetadata', onMeta, {once:true}); }
+  });
+
+  // ---- test pattern <-> video (TV icon) ----
+  var tvBtn=document.getElementById('b_tv');
+  function setTvActive(active){
+    if(!tvBtn) return;
+    if(active){ tvBtn.classList.add('active'); tvBtn.innerHTML=ICON.tvFill; }
+    else { tvBtn.classList.remove('active'); tvBtn.innerHTML=ICON.tvBold; }
+  }
+  function setBottomEnabled(on){ bottomBar.classList.toggle('disabled', !on); }
+  function showPatternMode(){
+    stopLoop(); stopTrimTick();
+    if(vid && vid.parentNode===cropWrap){ vidHolder.appendChild(vid); }
+    if(vid && !vid.paused){ try{ vid.pause(); }catch(_){} }
+    mode='pattern';
+    cropMinArr=[0,0]; cropMaxArr=[1,1];
+    fileNameEl.textContent='Test pattern';
+    setTvActive(true);
+    setBottomEnabled(false);
+    finishToPreviewPattern();
+    updateAudioUI();
+    makePattern(); render();
+  }
+  function finishToPreviewPattern(){ cropStage.style.display='none'; previewStage.style.display='flex'; cropBtn.classList.remove('active'); cropBtn.innerHTML=ICON.cropBold; }
+  function resumeVideoMode(){
+    if(!vid){ return; }
+    mode='video';
+    var c=centeredCropNorm(srcW,srcH,targetAspect()); cropMinArr=c.min; cropMaxArr=c.max;
+    fileNameEl.textContent=(vidFile&&vidFile.name)||'video';
+    setTvActive(false);
+    setBottomEnabled(true);
+    showPreview();
+    updateAudioUI();
+    if(vid.paused){ try{ vid.play(); }catch(_){} }
+    stopLoop(); loop(); startTrimTick(); updatePlayUI();
+  }
+  if(tvBtn){ tvBtn.addEventListener('click',function(){
+    if(mode==='pattern'){ if(vid){ resumeVideoMode(); } }
+    else { showPatternMode(); }
+  }); }
+
+  // ---- sparkle: CRT effect on/off ----
+  var effectBtn=document.getElementById('b_effect');
+  function updateEffectUI(){
+    var ico=effectBtn.querySelector('.ico');
+    if(on){ effectBtn.classList.add('active'); if(ico) ico.innerHTML=ICON.sparkleFill; }
+    else { effectBtn.classList.remove('active'); if(ico) ico.innerHTML=ICON.sparkleBold; }
+  }
+  effectBtn.addEventListener('click',function(){ on=on?0:1; updateEffectUI(); if(mode!=='video') render(); });
+
+  // ---- aspect (4:3 / 16:9 only) ----
+  var currentAspect='640:360';
+  var aspectSeg=document.getElementById('aspectSeg');
+  function applyAspect(str){
+    if(str!=='640:480' && str!=='640:360'){ str='640:360'; }
+    currentAspect=str;
+    Array.prototype.forEach.call(aspectSeg.querySelectorAll('.chip'),function(ch){ ch.classList.toggle('active', ch.getAttribute('data-ar')===str); });
+    var p=str.split(':'); cv.width=parseInt(p[0],10); cv.height=parseInt(p[1],10);
+    document.documentElement.style.setProperty('--ar', (cv.width/cv.height).toFixed(4));
+    makeTargets(cv.width,cv.height);
+    if(mode==='pattern'){ makePattern(); render(); }
+    else if(srcW&&srcH){
+      var c=centeredCropNorm(srcW,srcH,targetAspect()); cropMinArr=c.min; cropMaxArr=c.max;
+      if(cropStage.style.display!=='none' && cropStage.style.display!==''){ requestAnimationFrame(function(){ defaultBox(); }); }
+      if(mode!=='video') render();
+    } else { render(); }
+  }
+  aspectSeg.addEventListener('click',function(e){ var ch=e.target.closest('.chip'); if(ch){ applyAspect(ch.getAttribute('data-ar')); } });
+
+  // ---- effect sliders + numeric fields ----
+  var F={};
+  function reflectRange(sl){ sl.style.setProperty('--fill', sl.value+'%'); }
+  function field(slId, numId, fn){
+    var sl=document.getElementById(slId), num=document.getElementById(numId);
+    var obj={sl:sl, num:num, fn:fn};
+    reflectRange(sl);
+    sl.addEventListener('input',function(){ var val=clamp01(sl.value/100); num.value=val.toFixed(2); reflectRange(sl); fn(val); if(mode!=='video') render(); });
+    num.addEventListener('input',function(){ var v=parseFloat(num.value); if(isNaN(v))return; v=clamp01(v); sl.value=Math.round(v*100); reflectRange(sl); fn(v); if(mode!=='video') render(); });
+    return obj;
+  }
+  F.curve=field('s_curve','n_curve',function(v){ setCurve(v); });
+  F.scan =field('s_scan','n_scan',function(v){ scan=v; });
+  F.mask =field('s_mask','n_mask',function(v){ mask=v; });
+  F.vig  =field('s_vig','n_vig',function(v){ vig=v; });
+  F.bloom=field('s_bloom','n_bloom',function(v){ bloomAmt=v; });
+  function setF(f,val){ if(typeof val!=='number'||isNaN(val))return; val=clamp01(val); f.sl.value=Math.round(val*100); f.num.value=val.toFixed(2); reflectRange(f.sl); f.fn(val); }
+
+  // ---- reset: zero all five params (does NOT change initial load defaults) ----
+  document.getElementById('b_reset').addEventListener('click',function(){
+    setF(F.curve,0); setF(F.scan,0); setF(F.mask,0); setF(F.vig,0); setF(F.bloom,0);
+    if(mode!=='video') render();
+  });
+
+  function downloadBlob(blob,name){ var u=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(u); },2000); }
+
+  // ---- presets (Load / Save) ----
+  document.getElementById('b_savepreset').addEventListener('click',function(){
+    var preset={ version:1, curvature:+F.curve.num.value, scanlines:+F.scan.num.value, phosphor:+F.mask.num.value, vignette:+F.vig.num.value, bloom:+F.bloom.num.value, aspect:currentAspect };
+    downloadBlob(new Blob([JSON.stringify(preset,null,2)],{type:'application/json'}),'crt-preset.json');
+  });
+  var fPreset=document.createElement('input'); fPreset.type='file'; fPreset.accept='application/json,.json';
+  document.getElementById('b_loadpreset').addEventListener('click',function(){ fPreset.value=''; fPreset.click(); });
+  fPreset.addEventListener('change',function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var r=new FileReader();
+    r.onload=function(){
+      try{
+        var p=JSON.parse(r.result);
+        if(typeof p.aspect==='string'){ applyAspect(p.aspect); }
+        setF(F.curve,p.curvature); setF(F.scan,p.scanlines); setF(F.mask,p.phosphor); setF(F.vig,p.vignette); setF(F.bloom,p.bloom);
+        if(mode!=='video') render();
+      }catch(err){ alert('Could not read preset: '+err.message); }
+    };
+    r.readAsText(f);
+  });
+
+  // ---- export status / codec progress ----
+  var expStatus=document.getElementById('exp_status');
+  function status(t){ expStatus.textContent=t||''; }
+  var codecBar=document.getElementById('codecBar'), codecFill=document.getElementById('codecFill'), codecLabel=document.getElementById('codecLabel');
+  var exportCodec='';
+
+  function loadScript(src){
+    return new Promise(function(res,rej){
+      var s=document.createElement('script'); s.src=src;
+      s.onload=function(){ res(); }; s.onerror=function(){ rej(new Error('could not load '+src)); };
+      document.head.appendChild(s);
+    });
+  }
+  // Prefer the locally-vendored copies (work offline / behind strict CSP);
+  // fall back to the CDN if the local files aren't present.
+  var MP4MUXER_SRC='libs/mp4-muxer.min.js';
+  var MP4MUXER_CDN='https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.5/build/mp4-muxer.min.js';
+  var GIFJS_SRC='libs/gif.js';
+  var GIFJS_CDN='https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js';
+  var GIFJS_WORKER='libs/gif.worker.js';
+  var GIFJS_WORKER_CDN='https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js';
+
+  // Resolves with the URL that actually loaded the library, so callers can
+  // pick a matching sibling resource (e.g. the GIF web-worker script).
+  function ensureLib(src, globalName, fallback){
+    return new Promise(function(res,rej){
+      if(window[globalName]!==undefined){ res(src); return; }
+      loadScript(src)
+        .then(function(){ if(window[globalName]!==undefined) res(src); else throw new Error(globalName+' missing'); })
+        .catch(function(){
+          if(!fallback){ rej(new Error(globalName+' missing')); return; }
+          loadScript(fallback).then(function(){ if(window[globalName]!==undefined) res(fallback); else rej(new Error(globalName+' missing')); }).catch(rej);
+        });
+    });
+  }
+
+  // ---- Preview audio (mute / volume) ----
+  // Source <video> stays muted by default so it can autoplay; these controls
+  // let you monitor sound while editing. Export audio is decoded straight from
+  // the file, so it's independent of whatever you set here.
+  var vidFile=null, audioBuffer=null, audioDecoded=false, audioCtx=null;
+  var prevMuted=false, prevVol=1;
+  var audioCtl=document.getElementById('audioCtl');
+  var muteBtn=document.getElementById('b_mute');
+  var volSlider=document.getElementById('s_vol');
+  var screenWrap=document.getElementById('screenWrap'), ppInd=document.getElementById('ppInd');
+  function reflectMuteUI(){
+    var m = vid ? (vid.muted || vid.volume===0) : (prevMuted || prevVol===0);
+    muteBtn.innerHTML = m ? ICON.volOff : ICON.volOn;
+  }
+  function updateAudioUI(){
+    audioCtl.style.visibility = 'visible';
+    screenWrap.style.cursor = (mode==='video') ? 'pointer' : 'default';
+    if(vid){ volSlider.value=Math.round(vid.volume*100); }
+    reflectRange(volSlider);
+    reflectMuteUI();
+  }
+
+  // ---- click the preview to play / pause, with a state indicator ----
+  var ppHideTimer=null;
+  var PP_PLAY='<div class="ppcirc"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>';
+  var PP_PAUSE='<div class="ppcirc"><svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></div>';
+  function reflectPP(){
+    updatePlayUI();
+    if(ppHideTimer){ clearTimeout(ppHideTimer); ppHideTimer=null; }
+    if(mode!=='video' || !vid || exporting){ ppInd.classList.remove('show'); return; }
+    var paused=vid.paused;
+    ppInd.innerHTML = paused ? PP_PLAY : PP_PAUSE;   // play stays while paused, pause flashes then fades while playing
+    ppInd.classList.add('show');
+    if(!paused){ ppHideTimer=setTimeout(function(){ ppInd.classList.remove('show'); }, 600); }
+  }
+  function togglePreviewPlay(){
+    if(mode!=='video' || !vid || exporting) return;
+    if(vid.paused){
+      if(vid.currentTime>=trimEnd-0.05 || vid.currentTime<trimStart-0.05){ try{ vid.currentTime=trimStart; }catch(e){} }
+      try{ vid.play(); }catch(e){}
+    } else { vid.pause(); }
+  }
+  screenWrap.addEventListener('click', togglePreviewPlay);
+  muteBtn.addEventListener('click',function(){
+    if(vid){
+      vid.muted=!vid.muted;
+      if(!vid.muted && vid.volume===0){ vid.volume=1; volSlider.value=100; reflectRange(volSlider); }
+      prevMuted=vid.muted; prevVol=vid.volume;
+    } else {
+      prevMuted=!prevMuted;
+      if(!prevMuted && prevVol===0){ prevVol=1; volSlider.value=100; reflectRange(volSlider); }
+    }
+    reflectMuteUI();
+  });
+  volSlider.addEventListener('input',function(){
+    var v=clamp01(volSlider.value/100);
+    if(vid){ vid.volume=v; if(v>0 && vid.muted) vid.muted=false; prevMuted=vid.muted; prevVol=v; }
+    else { prevVol=v; if(v>0){ prevMuted=false; } }
+    reflectRange(volSlider); reflectMuteUI();
+  });
+
+  function getAudioCtx(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ audioCtx=null; } } return audioCtx; }
+  // Decode the file's audio once and cache it; resolves null if the clip has no
+  // audio track (or the browser can't decode it) so export just goes silent.
+  function decodeAudio(){
+    if(mode!=='video' || !vidFile) return Promise.resolve(null);
+    if(audioDecoded) return Promise.resolve(audioBuffer);
+    var ctx=getAudioCtx(); if(!ctx) return Promise.resolve(null);
+    return vidFile.arrayBuffer().then(function(buf){
+      return new Promise(function(res){ ctx.decodeAudioData(buf.slice(0), function(ab){ res(ab); }, function(){ res(null); }); });
+    }).then(function(ab){ audioBuffer=ab; audioDecoded=true; return ab; })
+      .catch(function(){ audioDecoded=true; audioBuffer=null; return null; });
+  }
+
+  // ---- export format (chips) ----
+  var exportFmt='mp4';
+  var fmtSeg=document.getElementById('fmtSeg');
+  fmtSeg.addEventListener('click',function(e){
+    var ch=e.target.closest('.chip'); if(!ch || exporting) return;
+    exportFmt=ch.getAttribute('data-fmt');
+    Array.prototype.forEach.call(fmtSeg.querySelectorAll('.chip'),function(c){ c.classList.toggle('active', c===ch); });
+  });
+
+  var exportBtn=document.getElementById('b_export');
+  var exportLabel=exportBtn.querySelector('.export-label');
+  var STATIC_SECS=3;                       // duration when "video-exporting" the static test pattern
+  var exporting=false, exportMode=null, recTimer=null;
+  var rec=null, chunks=[];                  // MediaRecorder (webm)
+  var webAudioSrc=null;                     // AudioBufferSourceNode feeding the webm audio track
+  var capRAF=null, capStart=0;             // frame-capture loop
+  var vEnc=null, aEnc=null, muxer=null;     // WebCodecs + mp4-muxer
+  var encChunks=0, encErrored=false, firstEnc=true, capLastEnc=0, lastVTs=-1, lastErr='';
+  var gif=null, gifCanvas=null, gifCtx=null, gifLastAdd=0;
+
+  // ---- export range / progress ----
+  function exportLen(){ return (mode==='video') ? Math.max(0.1, trimEnd-trimStart) : STATIC_SECS; }
+  function videoStartTime(){ return (mode==='video') ? trimStart : 0; }
+  function exportProgress(){
+    if(mode==='video' && vid && trimEnd>trimStart){ return clamp((vid.currentTime-trimStart)/(trimEnd-trimStart),0,1); }
+    return clamp((performance.now()-capStart)/(STATIC_SECS*1000),0,1);
+  }
+  function exportReachedEnd(){
+    if(mode==='video' && vid){ return vid.ended || vid.currentTime>=trimEnd-0.03; }
+    return (performance.now()-capStart) >= STATIC_SECS*1000;
+  }
+
+  function exportUIStart(){
+    exporting=true; exportLabel.textContent='Stop'; exportBtn.classList.add('primary');
+    codecBar.classList.add('show'); codecFill.style.width='0%'; codecLabel.textContent=exportCodec+' // 0.0%';
+    recTimer=setInterval(function(){
+      var p=exportProgress();
+      codecFill.style.width=(p*100).toFixed(1)+'%';
+      codecLabel.textContent=exportCodec+' // '+(p*100).toFixed(1)+'%';
+    },120);
+  }
+  function exportUIStop(){
+    exporting=false; exportLabel.textContent='Export'; exportBtn.classList.remove('primary');
+    codecBar.classList.remove('show'); clearInterval(recTimer);
+  }
+
+  // Seek to the start of the export range and start playback; resolves once the
+  // seek has landed so the first captured frame is actually frame one.
+  function primeExport(){
+    return new Promise(function(res){
+      if(mode==='video' && vid){
+        vid.loop=false;
+        var go=function(){ capStart=performance.now(); if(vid.paused){ try{ vid.play(); }catch(e){} } res(); };
+        if(Math.abs(vid.currentTime - videoStartTime()) > 0.05){
+          var done=false;
+          var onSeek=function(){ if(done) return; done=true; vid.removeEventListener('seeked',onSeek); go(); };
+          vid.addEventListener('seeked', onSeek);
+          try{ vid.currentTime=videoStartTime(); }catch(e){ onSeek(); }
+          setTimeout(function(){ if(!done){ done=true; vid.removeEventListener('seeked',onSeek); go(); } }, 500);
+        } else { go(); }
+      } else { capStart=performance.now(); res(); }
+    });
+  }
+
+  function renderSourceFrame(){
+    if(mode==='video' && vid && vid.readyState>=2 && vid.videoWidth>0){ enforceTrim(); uploadSource(vid); }
+    render();
+  }
+
+  // ---- WebM via MediaRecorder (audio mixed in via Web Audio) — internal fallback ----
+  function startWebM(){
+    if(!cv.captureStream || !window.MediaRecorder){ alert('This browser lacks MediaRecorder/captureStream.'); return; }
+    exportCodec='WebM'; status('preparing…');
+    decodeAudio().then(function(ab){
+      var stream=cv.captureStream(30);
+      webAudioSrc=null;
+      if(ab && mode==='video' && getAudioCtx()){
+        try{
+          var dest=audioCtx.createMediaStreamDestination();
+          webAudioSrc=audioCtx.createBufferSource(); webAudioSrc.buffer=ab; webAudioSrc.connect(dest);
+          dest.stream.getAudioTracks().forEach(function(t){ stream.addTrack(t); });
+        }catch(e){ webAudioSrc=null; }
+      }
+      var mime='video/webm';
+      if(MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) mime='video/webm;codecs=vp9,opus';
+      else if(MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) mime='video/webm;codecs=vp8,opus';
+      else if(MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) mime='video/webm;codecs=vp9';
+      else if(MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) mime='video/webm;codecs=vp8';
+      chunks=[]; rec=new MediaRecorder(stream,{mimeType:mime});
+      rec.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
+      rec.onstop=function(){
+        if(webAudioSrc){ try{ webAudioSrc.stop(); }catch(e){} webAudioSrc=null; }
+        exportUIStop();
+        downloadBlob(new Blob(chunks,{type:'video/webm'}),'crt-export.webm');
+        status('done — saved WebM'); setTimeout(function(){ status(''); },4000);
+        if(mode==='video'){ stopLoop(); loop(); }
+      };
+      exportMode='webm'; status(''); stopLoop();
+      primeExport().then(function(){
+        if(webAudioSrc){ try{ if(audioCtx.state==='suspended') audioCtx.resume(); }catch(e){} try{ webAudioSrc.start(0, videoStartTime(), exportLen()); }catch(e){} }
+        rec.start(); exportUIStart();
+        capRAF=requestAnimationFrame(captureWebM);
+      });
+    }).catch(function(err){ encoderFallback(err); });
+  }
+  function captureWebM(){
+    if(!exporting){ return; }
+    renderSourceFrame();
+    if(exportReachedEnd()){ stopWebM(); return; }
+    capRAF=requestAnimationFrame(captureWebM);
+  }
+  function stopWebM(){
+    if(capRAF){ cancelAnimationFrame(capRAF); capRAF=null; }
+    if(rec && rec.state==='recording') rec.stop();   // → onstop downloads
+  }
+
+  // ---- MP4 / MOV via WebCodecs + mp4-muxer (AAC audio) ----
+  function pickVideoCodec(w,h){
+    var cands=[
+      {codec:'avc1.42001f', mux:'avc'},
+      {codec:'avc1.42E01E', mux:'avc'},
+      {codec:'avc1.4D401F', mux:'avc'},
+      {codec:'avc1.640028', mux:'avc'},
+      {codec:'vp09.00.10.08', mux:'vp9'},
+      {codec:'av01.0.04M.08', mux:'av1'}
+    ];
+    if(!window.VideoEncoder || !VideoEncoder.isConfigSupported){ return Promise.resolve(null); }
+    var i=0;
+    function tryNext(){
+      if(i>=cands.length) return Promise.resolve(null);
+      var c=cands[i++];
+      var cfg={ codec:c.codec, width:w, height:h, bitrate:8000000, framerate:30 };
+      return VideoEncoder.isConfigSupported(cfg).then(function(res){
+        if(res && res.supported){ return { cfg:cfg, mux:c.mux, codec:c.codec }; }
+        return tryNext();
+      }).catch(function(){ return tryNext(); });
+    }
+    return tryNext();
+  }
+  // Confirm the browser can actually encode AAC before we commit an audio track
+  // to the muxer — otherwise a late async config failure leaves an empty track
+  // that breaks finalize(). Resolves with a usable config, or null (→ silent).
+  function pickAudioConfig(ab){
+    if(!ab || mode!=='video' || !window.AudioEncoder || !AudioEncoder.isConfigSupported) return Promise.resolve(null);
+    var cfg={ codec:'mp4a.40.2', sampleRate:ab.sampleRate, numberOfChannels:Math.min(2, ab.numberOfChannels), bitrate:128000 };
+    return AudioEncoder.isConfigSupported(cfg).then(function(s){ return (s && s.supported) ? cfg : null; }).catch(function(){ return null; });
+  }
+  // Encode the trimmed slice of the decoded buffer up front as planar AudioData;
+  // timestamps start at 0 so they line up with the 0-based video frame stamps.
+  function encodeAudioRange(ab, enc, start, end, ch){
+    var sr=ab.sampleRate;
+    var startS=Math.max(0, Math.floor(start*sr)), endS=Math.min(ab.length, Math.floor(end*sr));
+    var total=endS-startS; if(total<=0) return 0;
+    var chans=[]; for(var c=0;c<ch;c++){ chans.push(ab.getChannelData(Math.min(c, ab.numberOfChannels-1))); }
+    var block=4096, ts=0, frames=0;
+    for(var i=0;i<total;i+=block){
+      var n=Math.min(block, total-i);
+      var data=new Float32Array(n*ch);
+      for(var c2=0;c2<ch;c2++){ var s=chans[c2], base=startS+i, off=c2*n; for(var k=0;k<n;k++){ data[off+k]=s[base+k]||0; } }
+      var ad=new AudioData({ format:'f32-planar', sampleRate:sr, numberOfFrames:n, numberOfChannels:ch, timestamp:Math.round(ts), data:data });
+      try{ enc.encode(ad); frames++; }catch(e){ lastErr='audio encode: '+e.message; }
+      ad.close();
+      ts += n/sr*1e6;
+    }
+    return frames;
+  }
+  function startMp4(target){
+    if(!window.VideoEncoder){ encoderFallback(new Error('WebCodecs not available')); return; }
+    status('checking encoder support…');
+    Promise.all([
+      ensureLib(MP4MUXER_SRC,'Mp4Muxer',MP4MUXER_CDN).then(function(){ return pickVideoCodec(cv.width, cv.height); }),
+      decodeAudio()
+    ]).then(function(arr){
+      var pick=arr[0], ab=arr[1];
+      if(!pick){ throw new Error('no H.264/VP9/AV1 encoder available in this browser'); }
+      exportCodec = pick.mux==='avc' ? 'H.264' : (pick.mux==='vp9' ? 'VP9' : 'AV1');
+      return pickAudioConfig(ab).then(function(aCfg){
+        muxer=new Mp4Muxer.Muxer({
+          target:new Mp4Muxer.ArrayBufferTarget(),
+          video:{ codec:pick.mux, width:cv.width, height:cv.height },
+          audio: aCfg ? { codec:'aac', sampleRate:aCfg.sampleRate, numberOfChannels:aCfg.numberOfChannels } : undefined,
+          // Frame/sample timestamps start near zero but not exactly; without this
+          // the muxer's default 'strict' mode throws ("first chunk … must have a
+          // timestamp of 0") and silently aborts every MP4/MOV export.
+          firstTimestampBehavior:'offset',
+          fastStart:'in-memory'
+        });
+        encChunks=0; encErrored=false; firstEnc=true; capLastEnc=0; lastVTs=-1; lastErr='';
+        vEnc=new VideoEncoder({
+          output:function(chunk,meta){ try{ muxer.addVideoChunk(chunk,meta); encChunks++; }catch(e){ lastErr='mux: '+e.message; console.error(e); } },
+          error:function(e){ encErrored=true; lastErr=(e&&e.message)||String(e); console.error('encoder error',e); }
+        });
+        vEnc.configure({ codec:pick.codec, width:cv.width, height:cv.height, bitrate:8000000, framerate:30, latencyMode:'realtime' });
+        aEnc=null;
+        if(aCfg){
+          try{
+            aEnc=new AudioEncoder({
+              output:function(chunk,meta){ try{ muxer.addAudioChunk(chunk,meta); }catch(e){ lastErr='mux audio: '+e.message; console.error(e); } },
+              error:function(e){ lastErr='audio enc: '+((e&&e.message)||String(e)); console.error('audio encoder',e); }
+            });
+            aEnc.configure(aCfg);
+            encodeAudioRange(ab, aEnc, videoStartTime(), videoStartTime()+exportLen(), aCfg.numberOfChannels);
+          }catch(e){ aEnc=null; lastErr='audio: '+e.message; console.error(e); }
+        }
+        status('exporting ('+pick.codec.split('.')[0]+(aEnc?' + aac':'')+')…');
+        exportMode=(target==='mov'?'mov':'mp4'); stopLoop();
+        primeExport().then(function(){ exportUIStart(); capRAF=requestAnimationFrame(captureMp4); });
+      });
+    }).catch(function(err){ encoderFallback(err); });
+  }
+  function captureMp4(){
+    if(!exporting){ return; }
+    renderSourceFrame();
+    var now=performance.now();
+    if(vEnc && vEnc.state==='configured' && (now-capLastEnc)>=33 && vEnc.encodeQueueSize<30){
+      var sec = (mode==='video' && vid) ? Math.max(0, vid.currentTime - videoStartTime()) : (now-capStart)/1000;
+      var ts = Math.round(sec*1e6);
+      if(ts<=lastVTs){ ts=lastVTs+1; } lastVTs=ts;
+      // mp4-muxer requires each chunk to carry a real, non-negative duration
+      // (it reads chunk.duration), so stamp the frame with a nominal 30fps span.
+      var frame=new VideoFrame(cv,{ timestamp:ts, duration:Math.round(1e6/30) });
+      try{ vEnc.encode(frame, { keyFrame: firstEnc }); firstEnc=false; }
+      catch(e){ lastErr='encode: '+e.message; console.error('encode',e); }
+      finally{ frame.close(); }
+      capLastEnc=now;
+    }
+    if(exportReachedEnd()){ stopMp4(); return; }
+    capRAF=requestAnimationFrame(captureMp4);
+  }
+  function cleanupMp4(){
+    try{ if(vEnc && vEnc.state!=='closed') vEnc.close(); }catch(e){}
+    try{ if(aEnc && aEnc.state!=='closed') aEnc.close(); }catch(e){}
+    vEnc=null; aEnc=null; muxer=null; exportUIStop(); if(mode==='video'){ stopLoop(); loop(); }
+  }
+  function stopMp4(){
+    if(capRAF){ cancelAnimationFrame(capRAF); capRAF=null; }
+    if(encErrored || encChunks===0){
+      status(''); cleanupMp4();
+      alert('MP4 export failed'+(lastErr?(': '+lastErr):' (no frames encoded)')+'.\n\nSwitching to WebM, which always works locally — just hit Export again.');
+      exportFmt='webm';
+      return;
+    }
+    var ext=(exportMode==='mov')?'mov':'mp4', mime=(exportMode==='mov')?'video/quicktime':'video/mp4';
+    status('finalizing '+ext.toUpperCase()+'…');
+    var flushes=[ vEnc.flush() ];
+    if(aEnc){ flushes.push(aEnc.flush().catch(function(e){ console.error('audio flush',e); })); }
+    Promise.all(flushes).then(function(){
+      var buf;
+      try{ muxer.finalize(); buf=muxer.target.buffer; }
+      catch(e){ throw new Error('finalize — '+e.message); }
+      downloadBlob(new Blob([buf],{type:mime}),'crt-export.'+ext);
+      cleanupMp4();
+      status('done — saved '+ext.toUpperCase()); setTimeout(function(){ status(''); },4000);
+    }).catch(function(err){
+      console.error(err); status(''); cleanupMp4();
+      alert('MP4 export failed ('+err.message+'). Switch to WebM — it always works locally.');
+      exportFmt='webm';
+    });
+  }
+
+  // ---- GIF via gif.js (silent) ----
+  function startGif(){
+    exportCodec='GIF'; status('loading GIF encoder…');
+    ensureLib(GIFJS_SRC,'GIF',GIFJS_CDN).then(function(loadedFrom){
+      var gw=Math.min(cv.width,480), scale=gw/cv.width, gh=Math.round(cv.height*scale);
+      var worker = (loadedFrom===GIFJS_CDN) ? GIFJS_WORKER_CDN : GIFJS_WORKER;
+      gifCanvas=document.createElement('canvas'); gifCanvas.width=gw; gifCanvas.height=gh; gifCtx=gifCanvas.getContext('2d');
+      gif=new GIF({ workers:2, quality:10, width:gw, height:gh, workerScript:worker, dither:false });
+      gifLastAdd=0; status(''); exportMode='gif'; stopLoop();
+      primeExport().then(function(){ exportUIStart(); capRAF=requestAnimationFrame(captureGif); });
+    }).catch(function(err){ encoderFallback(err); });
+  }
+  function captureGif(){
+    if(!exporting){ return; }
+    renderSourceFrame();
+    var now=performance.now();
+    if(now-gifLastAdd>=66){ gifCtx.drawImage(cv,0,0,gifCanvas.width,gifCanvas.height); gif.addFrame(gifCanvas,{copy:true,delay:66}); gifLastAdd=now; }
+    if(exportReachedEnd()){ stopGif(); return; }
+    capRAF=requestAnimationFrame(captureGif);
+  }
+  function stopGif(){
+    if(capRAF){ cancelAnimationFrame(capRAF); capRAF=null; }
+    status('encoding GIF… (this can take a bit)');
+    gif.on('finished',function(blob){ downloadBlob(blob,'crt-export.gif'); gif=null; exportUIStop(); if(mode==='video'){ stopLoop(); loop(); } status('done — saved GIF'); setTimeout(function(){ status(''); },4000); });
+    gif.render();
+  }
+
+  function encoderFallback(err){
+    console.error(err);
+    status(''); exportUIStop();
+    alert('Native encoder unavailable ('+err.message+'). Falling back to WebM.');
+    exportFmt='webm'; startWebM();
+  }
+
+  function stopExport(){
+    if(exportMode==='webm'){ stopWebM(); }
+    else if(exportMode==='mp4'||exportMode==='mov'){ stopMp4(); }
+    else if(exportMode==='gif'){ stopGif(); }
+  }
+
+  exportBtn.addEventListener('click',function(){
+    if(exporting){ stopExport(); return; }                      // clicking mid-export stops early & saves
+    if(mode==='video' && !(trimEnd>trimStart)){ alert('Trim range is empty — drag the trim handles to select a span.'); return; }
+    var target=exportFmt;
+    if(target==='webm'){ startWebM(); return; }
+    if(target==='gif'){ startGif(); return; }
+    if((target==='mp4'||target==='mov') && window.VideoEncoder){ startMp4(target); return; }
+    alert('Your browser lacks the WebCodecs encoder needed for '+target.toUpperCase()+' (try Chrome/Edge). Exporting WebM instead.');
+    exportFmt='webm'; startWebM();
+  });
+
+  // ---- boot ----
+  updateEffectUI();
+  setTvActive(true);
+  cropBtn.innerHTML=ICON.cropBold;
+  updatePlayUI();
+  reflectMuteUI();
+  makeTargets(cv.width, cv.height);
+  document.documentElement.style.setProperty('--ar', (cv.width/cv.height).toFixed(4));
+  showPreview();
+  setBottomEnabled(false);
+  updateAudioUI();
+  makePattern();
+  render();
+})();
+</script>
+</body>
+</html>
