@@ -143,7 +143,8 @@ vite.config.ts.timestamp-*
 .vite/
 
 # Essentials
-.claude/
-CLAUDE.md
+.claude/*
 .vscode/
 .DS_Store
+!.claude/summary-of-work/
+!.claude/summary-of-work/**
