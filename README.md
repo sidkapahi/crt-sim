@@ -1,4 +1,4 @@
-# CRT Sim
+# CRT Simulator
 
 A browser-based CRT/OLED shader playground. Load a clip, dial in the curve, scanlines, phosphor mask, bloom and vignette, then crop, trim and export it — MP4, MOV or GIF. No install, no build step, everything runs client-side.
 
