@@ -8,6 +8,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+
+<!-- PostHog analytics. All custom events are prefixed "crtsim_".
+     Swap the key/host below to point at a different PostHog project. -->
+<script>
+  // Project API key (phc_…) — a client-side ingestion key, safe to expose.
+  window.CRTSIM_POSTHOG_KEY  = 'phc_DoPpsxfAS6DNyFDRsvXSvg8NqHiHRdSnPRvSXj43qRug';
+  window.CRTSIM_POSTHOG_HOST = 'https://us.i.posthog.com';
+  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+  if(window.CRTSIM_POSTHOG_KEY && window.CRTSIM_POSTHOG_KEY.indexOf('phc_')===0){
+    posthog.init(window.CRTSIM_POSTHOG_KEY, { api_host: window.CRTSIM_POSTHOG_HOST, defaults: '2025-05-24', person_profiles: 'identified_only' });
+  }
+</script>
 </head>
 <body>
 <div class="layout" id="app">
@@ -170,6 +182,22 @@
 
   function clamp01(x){ return Math.max(0, Math.min(1, x)); }
   function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
+
+  // ---- analytics (PostHog) ----
+  // Thin, always-safe wrapper: no-ops if PostHog failed to load or isn't
+  // configured. Every event name is prefixed "crtsim_".
+  function track(name, props){
+    try{ if(window.posthog && typeof posthog.capture==='function'){ posthog.capture(name, props||{}); } }catch(e){}
+  }
+
+  // Maps the internal canvas-size string to the label shown in the UI.
+  function aspectLabel(str){ return (str||currentAspect)==='640:480' ? '4:3' : '16:9'; }
+
+  // ---- brand link clicks (Ko-fi / GitHub) ----
+  var coffeeBtn=document.getElementById('b_coffee');
+  if(coffeeBtn){ coffeeBtn.addEventListener('click',function(){ track('crtsim_kofi_clicked'); }); }
+  var githubBtn=document.getElementById('b_github');
+  if(githubBtn){ githubBtn.addEventListener('click',function(){ track('crtsim_github_clicked'); }); }
 
   function compile(type, src){
     var s = gl.createShader(type);
@@ -530,17 +558,25 @@
       stopLoop(); loop(); startTrimTick();
     } else { render(); }
   }
-  document.getElementById('b_applycrop').addEventListener('click', function(){ applyCropFromBox(); finishToPreview(); });
-  document.getElementById('b_fullcrop').addEventListener('click', function(){ cropMinArr=[0,0]; cropMaxArr=[1,1]; finishToPreview(); });
+  function trackCropApplied(){
+    track('crtsim_crop_applied', {
+      crop_x: +cropMinArr[0].toFixed(4), crop_y: +cropMinArr[1].toFixed(4),
+      crop_width: +(cropMaxArr[0]-cropMinArr[0]).toFixed(4),
+      crop_height: +(cropMaxArr[1]-cropMinArr[1]).toFixed(4),
+      aspect: aspectLabel()
+    });
+  }
+  document.getElementById('b_applycrop').addEventListener('click', function(){ applyCropFromBox(); trackCropApplied(); finishToPreview(); });
+  document.getElementById('b_fullcrop').addEventListener('click', function(){ cropMinArr=[0,0]; cropMaxArr=[1,1]; track('crtsim_crop_reset'); finishToPreview(); });
   cropBtn.addEventListener('click', function(){
     if(mode!=='video' || !vid){ return; }
     if(cropStage.style.display==='none' || cropStage.style.display===''){ openCropVideo(); }
-    else { applyCropFromBox(); finishToPreview(); }
+    else { applyCropFromBox(); trackCropApplied(); finishToPreview(); }
   });
 
   // ---- import (video only) ----
   var fVid=document.createElement('input'); fVid.type='file'; fVid.accept='video/mp4,video/webm,video/quicktime';
-  document.getElementById('b_import').addEventListener('click',function(){ fVid.value=''; fVid.click(); });
+  document.getElementById('b_import').addEventListener('click',function(){ track('crtsim_upload_triggered'); fVid.value=''; fVid.click(); });
 
   function acceptedVideo(f){
     if(!f) return false;
@@ -550,7 +586,7 @@
 
   fVid.addEventListener('change',function(e){
     var f=e.target.files[0]; if(!f) return;
-    if(!acceptedVideo(f)){ alert('Unsupported file. Please choose a .mp4, .webm, or .mov video.'); return; }
+    if(!acceptedVideo(f)){ track('crtsim_upload_rejected', { file_type:f.type||'', file_ext:(f.name||'').split('.').pop().toLowerCase() }); alert('Unsupported file. Please choose a .mp4, .webm, or .mov video.'); return; }
     stopLoop();
     vidFile=f; audioBuffer=null; audioDecoded=false;   // cached audio belongs to the previous clip
     if(!vid){ vid=document.createElement('video'); vid.muted=true; vid.playsInline=true; vid.loop=false; vid.addEventListener('play',reflectPP); vid.addEventListener('pause',reflectPP); }
@@ -559,6 +595,10 @@
     function onMeta(){
       mode='video'; srcW=vid.videoWidth; srcH=vid.videoHeight;
       dur=isFinite(vid.duration)?vid.duration:0; trimStart=0; trimEnd=dur;
+      track('crtsim_video_loaded', {
+        file_type:f.type||'', file_ext:(f.name||'').split('.').pop().toLowerCase(),
+        source_width:srcW, source_height:srcH, duration_seconds:+dur.toFixed(2)
+      });
       var c=centeredCropNorm(srcW,srcH,targetAspect()); cropMinArr=c.min; cropMaxArr=c.max;
       fileNameEl.textContent=f.name;
       setTvActive(false);
@@ -609,8 +649,8 @@
     stopLoop(); loop(); startTrimTick(); updatePlayUI();
   }
   if(tvBtn){ tvBtn.addEventListener('click',function(){
-    if(mode==='pattern'){ if(vid){ resumeVideoMode(); } }
-    else { showPatternMode(); }
+    if(mode==='pattern'){ if(vid){ track('crtsim_test_pattern_toggled',{active:false}); resumeVideoMode(); } }
+    else { track('crtsim_test_pattern_toggled',{active:true}); showPatternMode(); }
   }); }
 
   // ---- sparkle: CRT effect on/off ----
@@ -620,7 +660,7 @@
     if(on){ effectBtn.classList.add('active'); if(ico) ico.innerHTML=ICON.sparkleFill; }
     else { effectBtn.classList.remove('active'); if(ico) ico.innerHTML=ICON.sparkleBold; }
   }
-  effectBtn.addEventListener('click',function(){ on=on?0:1; updateEffectUI(); if(mode!=='video') render(); });
+  effectBtn.addEventListener('click',function(){ on=on?0:1; updateEffectUI(); track('crtsim_effect_toggled',{enabled:!!on}); if(mode!=='video') render(); });
 
   // ---- aspect (4:3 / 16:9 only) ----
   var currentAspect='640:360';
@@ -639,29 +679,35 @@
       if(mode!=='video') render();
     } else { render(); }
   }
-  aspectSeg.addEventListener('click',function(e){ var ch=e.target.closest('.chip'); if(ch){ applyAspect(ch.getAttribute('data-ar')); } });
+  aspectSeg.addEventListener('click',function(e){ var ch=e.target.closest('.chip'); if(ch){ applyAspect(ch.getAttribute('data-ar')); track('crtsim_aspect_changed',{ aspect:aspectLabel(currentAspect), width:cv.width, height:cv.height }); } });
 
   // ---- effect sliders + numeric fields ----
   var F={};
   function reflectRange(sl){ sl.style.setProperty('--fill', sl.value+'%'); }
-  function field(slId, numId, fn){
+  function field(slId, numId, label, fn){
     var sl=document.getElementById(slId), num=document.getElementById(numId);
     var obj={sl:sl, num:num, fn:fn};
     reflectRange(sl);
+    // Fire on "change" (slider release / field commit) rather than every "input"
+    // tick, so we log the value the user settled on, not the drag in between.
+    function logValue(){ track('crtsim_effect_changed',{ effect:label, value:+parseFloat(num.value||0).toFixed(2) }); }
     sl.addEventListener('input',function(){ var val=clamp01(sl.value/100); num.value=val.toFixed(2); reflectRange(sl); fn(val); if(mode!=='video') render(); });
     num.addEventListener('input',function(){ var v=parseFloat(num.value); if(isNaN(v))return; v=clamp01(v); sl.value=Math.round(v*100); reflectRange(sl); fn(v); if(mode!=='video') render(); });
+    sl.addEventListener('change', logValue);
+    num.addEventListener('change', logValue);
     return obj;
   }
-  F.curve=field('s_curve','n_curve',function(v){ setCurve(v); });
-  F.scan =field('s_scan','n_scan',function(v){ scan=v; });
-  F.mask =field('s_mask','n_mask',function(v){ mask=v; });
-  F.vig  =field('s_vig','n_vig',function(v){ vig=v; });
-  F.bloom=field('s_bloom','n_bloom',function(v){ bloomAmt=v; });
+  F.curve=field('s_curve','n_curve','curvature',function(v){ setCurve(v); });
+  F.scan =field('s_scan','n_scan','scanlines',function(v){ scan=v; });
+  F.mask =field('s_mask','n_mask','phosphor',function(v){ mask=v; });
+  F.vig  =field('s_vig','n_vig','vignette',function(v){ vig=v; });
+  F.bloom=field('s_bloom','n_bloom','bloom',function(v){ bloomAmt=v; });
   function setF(f,val){ if(typeof val!=='number'||isNaN(val))return; val=clamp01(val); f.sl.value=Math.round(val*100); f.num.value=val.toFixed(2); reflectRange(f.sl); f.fn(val); }
 
   // ---- reset: zero all five params (does NOT change initial load defaults) ----
   document.getElementById('b_reset').addEventListener('click',function(){
     setF(F.curve,0); setF(F.scan,0); setF(F.mask,0); setF(F.vig,0); setF(F.bloom,0);
+    track('crtsim_effects_reset');
     if(mode!=='video') render();
   });
 
@@ -670,6 +716,7 @@
   // ---- presets (Load / Save) ----
   document.getElementById('b_savepreset').addEventListener('click',function(){
     var preset={ version:1, curvature:+F.curve.num.value, scanlines:+F.scan.num.value, phosphor:+F.mask.num.value, vignette:+F.vig.num.value, bloom:+F.bloom.num.value, aspect:currentAspect };
+    track('crtsim_preset_saved', { curvature:preset.curvature, scanlines:preset.scanlines, phosphor:preset.phosphor, vignette:preset.vignette, bloom:preset.bloom, aspect:aspectLabel(currentAspect) });
     downloadBlob(new Blob([JSON.stringify(preset,null,2)],{type:'application/json'}),'crt-preset.json');
   });
   var fPreset=document.createElement('input'); fPreset.type='file'; fPreset.accept='application/json,.json';
@@ -682,6 +729,7 @@
         var p=JSON.parse(r.result);
         if(typeof p.aspect==='string'){ applyAspect(p.aspect); }
         setF(F.curve,p.curvature); setF(F.scan,p.scanlines); setF(F.mask,p.phosphor); setF(F.vig,p.vignette); setF(F.bloom,p.bloom);
+        track('crtsim_preset_loaded', { curvature:+F.curve.num.value, scanlines:+F.scan.num.value, phosphor:+F.mask.num.value, vignette:+F.vig.num.value, bloom:+F.bloom.num.value, aspect:aspectLabel(currentAspect) });
         if(mode!=='video') render();
       }catch(err){ alert('Could not read preset: '+err.message); }
     };
@@ -804,6 +852,7 @@
   fmtSeg.addEventListener('click',function(e){
     var ch=e.target.closest('.chip'); if(!ch || exporting) return;
     exportFmt=ch.getAttribute('data-fmt');
+    track('crtsim_export_format_selected', { format:exportFmt });
     Array.prototype.forEach.call(fmtSeg.querySelectorAll('.chip'),function(c){ c.classList.toggle('active', c===ch); });
   });
 
@@ -892,6 +941,7 @@
         if(webAudioSrc){ try{ webAudioSrc.stop(); }catch(e){} webAudioSrc=null; }
         exportUIStop();
         downloadBlob(new Blob(chunks,{type:'video/webm'}),'crt-export.webm');
+        track('crtsim_export_completed', { format:'webm', codec:exportCodec });
         status('done — saved WebM'); setTimeout(function(){ status(''); },4000);
         if(mode==='video'){ stopLoop(); loop(); }
       };
@@ -1035,6 +1085,7 @@
   function stopMp4(){
     if(capRAF){ cancelAnimationFrame(capRAF); capRAF=null; }
     if(encErrored || encChunks===0){
+      track('crtsim_export_failed', { format:exportMode, codec:exportCodec, reason:lastErr||'no frames encoded' });
       status(''); cleanupMp4();
       alert('MP4 export failed'+(lastErr?(': '+lastErr):' (no frames encoded)')+'.\n\nSwitching to WebM, which always works locally — just hit Export again.');
       exportFmt='webm';
@@ -1049,9 +1100,11 @@
       try{ muxer.finalize(); buf=muxer.target.buffer; }
       catch(e){ throw new Error('finalize — '+e.message); }
       downloadBlob(new Blob([buf],{type:mime}),'crt-export.'+ext);
+      track('crtsim_export_completed', { format:ext, codec:exportCodec });
       cleanupMp4();
       status('done — saved '+ext.toUpperCase()); setTimeout(function(){ status(''); },4000);
     }).catch(function(err){
+      track('crtsim_export_failed', { format:ext, codec:exportCodec, reason:err.message });
       console.error(err); status(''); cleanupMp4();
       alert('MP4 export failed ('+err.message+'). Switch to WebM — it always works locally.');
       exportFmt='webm';
@@ -1081,11 +1134,12 @@
   function stopGif(){
     if(capRAF){ cancelAnimationFrame(capRAF); capRAF=null; }
     status('encoding GIF… (this can take a bit)');
-    gif.on('finished',function(blob){ downloadBlob(blob,'crt-export.gif'); gif=null; exportUIStop(); if(mode==='video'){ stopLoop(); loop(); } status('done — saved GIF'); setTimeout(function(){ status(''); },4000); });
+    gif.on('finished',function(blob){ downloadBlob(blob,'crt-export.gif'); track('crtsim_export_completed', { format:'gif', codec:'GIF' }); gif=null; exportUIStop(); if(mode==='video'){ stopLoop(); loop(); } status('done — saved GIF'); setTimeout(function(){ status(''); },4000); });
     gif.render();
   }
 
   function encoderFallback(err){
+    track('crtsim_export_failed', { format:exportFmt, codec:exportCodec, reason:err.message });
     console.error(err);
     status(''); exportUIStop();
     alert('Native encoder unavailable ('+err.message+'). Falling back to WebM.');
@@ -1099,9 +1153,10 @@
   }
 
   exportBtn.addEventListener('click',function(){
-    if(exporting){ stopExport(); return; }                      // clicking mid-export stops early & saves
+    if(exporting){ track('crtsim_export_stopped', { format:exportFmt, progress:+exportProgress().toFixed(3) }); stopExport(); return; }   // clicking mid-export stops early & saves
     if(mode==='video' && !(trimEnd>trimStart)){ alert('Trim range is empty — drag the trim handles to select a span.'); return; }
     var target=exportFmt;
+    track('crtsim_export_started', { format:target, mode:mode, duration_seconds:+exportLen().toFixed(2), width:cv.width, height:cv.height, aspect:aspectLabel(currentAspect) });
     if(target==='webm'){ startWebM(); return; }
     if(target==='gif'){ startGif(); return; }
     if((target==='mp4'||target==='mov') && window.VideoEncoder){ startMp4(target); return; }
@@ -1122,6 +1177,7 @@
   updateAudioUI();
   makePattern();
   render();
+  track('crtsim_app_loaded', { aspect:aspectLabel(currentAspect), width:cv.width, height:cv.height });
 })();
 </script>
 </body>
