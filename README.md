@@ -236,7 +236,7 @@ no events are sent. All custom events are prefixed `crtsim_` and go through the
 | `crtsim_app_loaded` | page boots | `aspect`, `width`, `height` |
 | `crtsim_kofi_clicked` / `crtsim_github_clicked` | brand link clicked | — |
 | `crtsim_upload_triggered` | Upload button clicked | — |
-| `crtsim_video_loaded` | a clip's metadata loads | `file_type`, `source_width/height`, `duration_seconds` |
+| `crtsim_video_loaded` | a clip's metadata loads | `file_type`, `file_ext`, `file_size_bytes`, `source_width/height`, `duration_seconds` |
 | `crtsim_upload_rejected` | unsupported file picked | `file_type`, `file_ext` |
 | `crtsim_test_pattern_toggled` | TV icon toggled | `active` |
 | `crtsim_effect_toggled` | CRT effect on/off | `enabled` |
