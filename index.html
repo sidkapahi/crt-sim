@@ -597,7 +597,7 @@
       dur=isFinite(vid.duration)?vid.duration:0; trimStart=0; trimEnd=dur;
       track('crtsim_video_loaded', {
         file_type:f.type||'', file_ext:(f.name||'').split('.').pop().toLowerCase(),
-        source_width:srcW, source_height:srcH, duration_seconds:+dur.toFixed(2)
+        file_size_bytes:f.size||0, source_width:srcW, source_height:srcH, duration_seconds:+dur.toFixed(2)
       });
       var c=centeredCropNorm(srcW,srcH,targetAspect()); cropMinArr=c.min; cropMaxArr=c.max;
       fileNameEl.textContent=f.name;
