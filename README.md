@@ -137,6 +137,10 @@ Exports cover the **trimmed range only**.
 crt-sim/
 ├── index.html              # markup, JS, GLSL
 ├── styles.css              # all styling
+├── assets/
+│   ├── logos/              # brand marks (github, ko-fi, twitch, x, kapkit) — swap your own
+│   ├── icons/              # optional UI-icon overrides (empty by default)
+│   └── README.md           # which file shows up where
 ├── libs/
 │   ├── gif.js              # GIF encoder
 │   ├── gif.worker.js       # GIF encoder worker
@@ -164,7 +168,7 @@ comment markers to jump around:
 | `// ---- test pattern <-> video` | Test-pattern toggle |
 | `// ---- aspect` | 4:3 / 16:9 switching |
 | `// ---- effect sliders + numeric fields` | Slider ↔ number-field binding |
-| `// ---- reset` | Zero all five effect params |
+| `// ---- reset` | Restore the five effect params to their defaults |
 | `// ---- presets (Load / Save)` | JSON preset import/export |
 | `// ---- Preview audio` | Mute / volume (Web Audio) |
 | `// ---- export format (chips)` | Format selection |
@@ -184,9 +188,10 @@ for theming — change the palette in one place.
 1. **Add a uniform** to the scene fragment shader string and a handle in the
    `uScene` lookup.
 2. **Wire it in `render()`** with the appropriate `gl.uniform1f(...)` call.
-3. **Add UI** — a `.ctl` row in the `Effects` card with a range input
-   (`s_yourEffect`, 0–100) and a number input (`n_yourEffect`, 0–1). Follow
-   the existing `Curvature` / `Scanlines` rows as a template.
+3. **Add UI** — a `.ctl` row in the effects section with a range input
+   (`s_yourEffect`, 0–100) and a whole-number field (`n_yourEffect`, 0–100).
+   Follow the existing `Scanlines` / `Phosphor` rows as a template. The bind
+   maps the 0–100 field to the shader's 0–1 float.
 4. **Bind it** in the `// ---- effect sliders + numeric fields` section so the
    slider and number field stay in sync and update the shader.
 5. **Include it** in the reset (`// ---- reset`) and preset save/load logic so
@@ -214,7 +219,8 @@ If you bump a vendored version, update both the file in `libs/` **and** the
 matching CDN URL constant (`MP4MUXER_SRC`/`MP4MUXER_CDN`,
 `GIFJS_WORKER`/`GIFJS_WORKER_CDN`).
 
-Fonts (`VT323`, `IBM Plex Mono`) are pulled from Google Fonts.
+Fonts (`VT323` for the title, `JetBrains Mono` for the UI) are pulled from
+Google Fonts.
 
 ### Analytics
 
