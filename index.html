@@ -116,10 +116,13 @@
 
     <div class="stage">
       <div class="stage-top">
-        <button class="stagebtn" id="b_crop" title="Crop" aria-label="Crop"></button>
-        <div class="aspect" id="aspectSeg" role="tablist" aria-label="Aspect ratio">
-          <button class="chip active" data-ar="640:360">16:9</button>
-          <button class="chip" data-ar="640:480">4:3</button>
+        <button class="fxbtn active" id="b_effect" title="Toggle CRT effect preview" aria-label="Toggle CRT effect preview"><span class="ico"></span><span>FX PREVIEW</span></button>
+        <div class="stage-right">
+          <div class="aspect" id="aspectSeg" role="tablist" aria-label="Aspect ratio">
+            <button class="chip active" data-ar="640:360">16:9</button>
+            <button class="chip" data-ar="640:480">4:3</button>
+          </div>
+          <button class="stagebtn" id="b_crop" title="Crop" aria-label="Crop"></button>
         </div>
       </div>
 
@@ -670,11 +673,17 @@
     else { track('crtsim_test_pattern_toggled',{active:true}); showPatternMode(); }
   }); }
 
-  // ---- CRT effect ----
-  // The kapkit redesign has no on/off compare toggle, so the CRT effect stays
-  // on (`on` = 1, set above); the sliders + RESET drive the whole look. This
-  // stays a guarded no-op so the boot call below is harmless.
-  function updateEffectUI(){ /* no effect toggle button in this layout */ }
+  // ---- FX PREVIEW: CRT effect on/off (top-left of the stage) ----
+  // ON (amber) applies the CRT shader; OFF shows the source untouched so you can
+  // compare. Works on the test pattern too, so it isn't gated on a loaded clip.
+  var effectBtn=document.getElementById('b_effect');
+  function updateEffectUI(){
+    if(!effectBtn) return;
+    var ico=effectBtn.querySelector('.ico');
+    if(on){ effectBtn.classList.add('active'); if(ico) ico.innerHTML=ICON.sparkleFill; }
+    else { effectBtn.classList.remove('active'); if(ico) ico.innerHTML=ICON.sparkleBold; }
+  }
+  if(effectBtn){ effectBtn.addEventListener('click',function(){ on=on?0:1; updateEffectUI(); track('crtsim_effect_toggled',{enabled:!!on}); if(mode!=='video') render(); }); }
 
   // ---- aspect (4:3 / 16:9 only) ----
   var currentAspect='640:360';

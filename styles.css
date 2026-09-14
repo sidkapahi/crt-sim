@@ -185,8 +185,15 @@ input.num:focus{ outline:none; border-color:var(--amber-dim); }
   display:flex; flex-direction:column; justify-content:space-between; padding:20px; gap:16px;
 }
 
-/* stage top bar: crop + aspect */
-.stage-top{ display:flex; align-items:center; gap:24px; flex:0 0 auto; }
+/* stage top bar: FX PREVIEW toggle (left) · aspect + crop (right) */
+.stage-top{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex:0 0 auto; }
+.stage-right{ display:flex; align-items:center; gap:24px; }
+/* FX PREVIEW = CRT effect on/off toggle */
+.fxbtn{ height:auto; padding:12px 16px; gap:10px; border-radius:9px; background:var(--card); border:1px solid var(--line); color:var(--text-2); font-weight:700; font-size:12.5px; letter-spacing:.3px; }
+.fxbtn .ico{ display:inline-flex; }
+.fxbtn .ico svg{ width:24px; height:24px; }
+.fxbtn:hover{ filter:brightness(1.2); }
+.fxbtn.active{ background:#563d1e; border-color:var(--amber); color:var(--amber); }
 .stagebtn{
   width:48px; height:48px; flex:0 0 auto; padding:0; background:var(--card);
   border:1px solid transparent; border-radius:9px; color:var(--text);
@@ -249,8 +256,10 @@ canvas{ display:block; width:min(var(--availW), calc(var(--availH) * var(--ar)))
 /* Before a clip is loaded, export / crop / aspect / media / reset / save read
    as disabled (matches the Figma "default" frame). Effects, upload, load and
    the links stay live so you can dial the look on the test pattern. */
+/* FX PREVIEW stays live (it drives the test pattern too); only aspect + crop,
+   the media bar, export and reset/save wait on a loaded clip. */
 #app.no-video .exportblock,
-#app.no-video .stage-top,
+#app.no-video .stage-right,
 #app.no-video .bottombar,
 #app.no-video #b_reset,
 #app.no-video #b_savepreset{ opacity:.24; pointer-events:none; }
