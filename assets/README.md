@@ -34,6 +34,6 @@ markup to load them from `assets/icons/`.
 
 ## Link URLs
 
-The Twitch and X chips and the footer **Privacy Policy** / **Terms of Service**
-links ship with placeholder `#` hrefs (search `TODO: link` in `index.html`).
-Point them at your real URLs when ready.
+The footer **Privacy Policy** / **Terms of Service** links ship with placeholder
+`#` hrefs (search `TODO: link` in `index.html`). Point them at your real URLs
+when ready. (GitHub, Ko-fi, Twitch and X links are set.)
