@@ -81,7 +81,7 @@ h1{
 /* primary / secondary buttons */
 button{
   background:var(--field); color:var(--text-2); border:1px solid var(--line);
-  border-radius:var(--radius-sm); padding:0; font-family:inherit; font-size:12.5px; cursor:pointer;
+  border-radius:var(--radius-sm); padding:0; font-family:inherit; font-size:14px; cursor:pointer;
   transition:border-color var(--t), color var(--t), background var(--t), filter var(--t), transform var(--t);
   display:inline-flex; align-items:center; justify-content:center; gap:10px;
 }
@@ -174,7 +174,7 @@ input.num:focus{ outline:none; border-color:var(--amber-dim); }
 .footer{ display:flex; flex-direction:column; gap:16px; align-items:center; }
 .foot-logo{ height:30px; width:auto; display:block; }
 .foot-legal{ display:flex; align-items:center; gap:12px; }
-.foot-link{ background:none; border:none; padding:0; height:auto; color:var(--muted); font-family:inherit; font-size:13px; letter-spacing:-0.26px; text-decoration:underline; text-underline-offset:2px; cursor:pointer; }
+.foot-link{ background:none; border:none; padding:0; height:auto; color:var(--muted); font-family:inherit; font-size:12px; letter-spacing:-0.26px; text-decoration:underline; text-underline-offset:2px; cursor:pointer; }
 .foot-link:hover{ color:var(--text); }
 .foot-dot{ width:3px; height:3px; border-radius:50%; background:var(--muted); }
 
