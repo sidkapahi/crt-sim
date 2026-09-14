@@ -1,5 +1,10 @@
-<!-- PLACEHOLDER — replace with your own X (Twitter) mark. See assets/README.md.
-     White fill so it sits on the black X chip in the sidebar link row. -->
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" fill="#fff"/>
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_63_398)">
+<path d="M11.8126 8.77143L17.6379 2H16.2575L11.1994 7.87954L7.15953 2H2.5L8.60911 10.8909L2.5 17.9918H3.88049L9.22197 11.7828L13.4884 17.9918H18.1479L11.8123 8.77143H11.8126ZM9.92187 10.9692L9.3029 10.0839L4.37789 3.03921H6.49824L10.4728 8.7245L11.0918 9.60983L16.2582 16.9998H14.1378L9.92187 10.9696V10.9692Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_63_398">
+<rect width="15.6479" height="16" fill="white" transform="translate(2.5 2)"/>
+</clipPath>
+</defs>
 </svg>
