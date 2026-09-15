@@ -219,10 +219,10 @@ If you bump a vendored version, update both the file in `libs/` **and** the
 matching CDN URL constant (`MP4MUXER_SRC`/`MP4MUXER_CDN`,
 `GIFJS_WORKER`/`GIFJS_WORKER_CDN`).
 
-The UI is set in **Stratum2** (a licensed font — drop your own copy into
-`assets/fonts/`, see `assets/fonts/README.md`). `JetBrains Mono` is pulled from
-Google Fonts and is the fallback until the Stratum2 files are present; it's also
-used for the `crt-sim` repo chip and the media-bar timecode.
+The UI is set in **Stratum2** — the `.woff` weights live in `assets/fonts/`
+(shared with `kapkit-cs2overlay`) and load via `@font-face`. `JetBrains Mono` is
+pulled from Google Fonts as the fallback, and is also used for the `crt-sim` repo
+chip and the media-bar timecode. See `assets/fonts/README.md`.
 
 ### Analytics
 

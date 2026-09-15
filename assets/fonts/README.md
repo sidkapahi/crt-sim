@@ -1,39 +1,30 @@
-# Fonts — drop the Stratum2 files here
+# Fonts — Stratum2 UI typeface
 
-The UI is set in **Stratum2** (the "stratum" redesign). Stratum2 is a **licensed
-font**, so its files are **not** committed to this repo — you supply your own
-copy from your license. Until the files are present, the UI falls back to
-`JetBrains Mono` (loaded from Google Fonts), so nothing looks broken in the
-meantime.
+The UI is set in **Stratum2** (the "stratum" redesign). The three webfont weights
+below are committed here and pulled in by `@font-face` in `styles.css`:
 
-## What to drop in
+| Weight        | File (this folder)                | Used for |
+| ------------- | --------------------------------- | -------- |
+| Regular (400) | `stratum2-regular-webfont.woff`   | tagline, Privacy / Terms footer links |
+| Medium (500)  | `stratum2-medium-webfont.woff`    | slider labels (SCANLINES …) and value boxes |
+| Bold (700)    | `stratum2-bold-webfont.woff`      | "CRT Sim" title, buttons, section labels, chips, FX PREVIEW pill, aspect labels |
 
-`styles.css` loads three weights via `@font-face`, each expecting a `.woff2`
-(preferred) with a `.woff` fallback. **Keep these exact file names** — the app
-references these paths directly, so no code change is needed:
+These `.woff` files were carried over from
+[`kapkit-cs2overlay`](https://github.com/sidkapahi/kapkit-cs2overlay)
+(`public/fonts/`) so the two projects share the same typeface. If a weight is ever
+missing, the UI falls back to `JetBrains Mono` (also used for the `crt-sim` repo
+chip and the media-bar timecode).
 
-| Weight        | Files (this folder)                              |
-| ------------- | ------------------------------------------------ |
-| Regular (400) | `Stratum2-Regular.woff2`, `Stratum2-Regular.woff` |
-| Medium (500)  | `Stratum2-Medium.woff2`, `Stratum2-Medium.woff`   |
-| Bold (700)    | `Stratum2-Bold.woff2`, `Stratum2-Bold.woff`       |
+## Swapping in a smaller / fuller kit
 
-Where each weight shows up:
+`.woff` is supported by every modern browser, so nothing else is required. To
+shrink load size, drop a matching `.woff2` next to each `.woff`
+(`stratum2-<weight>-webfont.woff2`) and add it as the first `src` in each
+`@font-face` rule in `styles.css`:
 
-- **Bold (700):** the "CRT Sim" title, UPLOAD / LOAD / SAVE / DOWNLOAD buttons,
-  section labels (EFFECTS, RESET TO DEFAULT), MP4/GIF/MOV chips, FX PREVIEW pill,
-  aspect labels.
-- **Medium (500):** effect slider labels (SCANLINES …) and the value boxes.
-- **Regular (400):** the tagline and the Privacy / Terms footer links.
+```css
+src:url('assets/fonts/stratum2-bold-webfont.woff2') format('woff2'),
+    url('assets/fonts/stratum2-bold-webfont.woff')  format('woff');
+```
 
-## Notes
-
-- **`.woff2` is enough on its own** — the `.woff` line is just an older-browser
-  fallback. If you only have `.woff2`, drop those three and ignore the rest;
-  the missing `.woff` sources are harmless.
-- Got `.ttf` / `.otf` instead? Either convert them to `.woff2` (e.g. with
-  `woff2` / `fonttools`), or tell me and I'll point the `@font-face` `src` at
-  the extensions you have.
-- After adding files, hard-refresh the page (the browser caches fonts).
-- `JetBrains Mono` stays wired as the fallback and is also used for the small
-  `crt-sim` repo chip and the media-bar timecode (kept monospace on purpose).
+Hard-refresh after replacing a file (the browser caches fonts).

@@ -26,10 +26,10 @@ Tips:
 
 ## `fonts/` — the Stratum2 UI typeface
 
-The UI is set in **Stratum2**, a licensed font that isn't committed here. Drop
-your licensed `.woff2` / `.woff` files into `fonts/` using the exact names in
-[`fonts/README.md`](fonts/README.md). Until then the UI falls back to
-`JetBrains Mono`, so nothing looks broken.
+The UI is set in **Stratum2**. The three committed `stratum2-*-webfont.woff`
+weights (carried over from `kapkit-cs2overlay`) are loaded by `@font-face` in
+`styles.css`; see [`fonts/README.md`](fonts/README.md) to swap in a smaller
+`.woff2` kit. `JetBrains Mono` is the fallback if a weight is missing.
 
 ## `icons/` — functional UI glyphs (optional override)
 
