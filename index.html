@@ -19,7 +19,15 @@
   window.CRTSIM_POSTHOG_HOST = 'https://us.i.posthog.com';
   !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
   if(window.CRTSIM_POSTHOG_KEY && window.CRTSIM_POSTHOG_KEY.indexOf('phc_')===0){
-    posthog.init(window.CRTSIM_POSTHOG_KEY, { api_host: window.CRTSIM_POSTHOG_HOST, defaults: '2025-05-24', person_profiles: 'identified_only' });
+    // Starts OPTED OUT — nothing is captured until the visitor accepts via the
+    // cookie consent banner (see mountConsent() in the app script below).
+    posthog.init(window.CRTSIM_POSTHOG_KEY, {
+      api_host: window.CRTSIM_POSTHOG_HOST,
+      defaults: '2025-05-24',
+      person_profiles: 'identified_only',
+      persistence: 'localStorage+cookie',
+      opt_out_capturing_by_default: true
+    });
   }
 </script>
 </head>
@@ -102,7 +110,7 @@
       <div class="footer">
         <img class="foot-logo" src="assets/logos/kapkit.png" alt="kapKit">
         <div class="foot-legal">
-          <!-- TODO: link — set Privacy / Terms URLs -->
+          <!-- open the Privacy & Cookies / Terms of Service modals (see mountConsent) -->
           <a class="foot-link" id="b_privacy" href="#">Privacy Policy</a>
           <span class="foot-dot"></span>
           <a class="foot-link" id="b_terms" href="#">Terms of Service</a>
@@ -167,6 +175,124 @@
     </div>
 
   </section>
+
+</div>
+
+<!-- ===================== CONSENT UI ===================== -->
+<!-- Cookie consent banner + Privacy & Cookies / Terms of Service modals, ported
+     from cs2widget.kapkit.ca (kapkit-cs2overlay). Analytics starts opted out
+     (see the PostHog init in <head>) and stays that way until Accept/Reject. -->
+<div class="consent-root">
+
+  <!-- cookie banner: a card pinned to the bottom-left, shown until a choice is made -->
+  <div class="cookie-banner" id="cookieBanner" role="region" aria-label="Cookie consent" hidden>
+    <img class="cookie-logo" src="assets/logos/kapkit.png" alt="kapKit">
+    <div class="cookie-copy">
+      <p class="cookie-title">Delicious Cookies</p>
+      <p class="cookie-text">We use privacy-friendly analytics to help improve CRT Sim and its features. Your video never leaves your browser.</p>
+    </div>
+    <button type="button" class="cookie-privacy" id="cookiePrivacy">Privacy Policy</button>
+    <div class="cookie-actions">
+      <button type="button" class="cookie-btn cookie-reject" id="cookieReject">No thanks</button>
+      <button type="button" class="cookie-btn cookie-accept" id="cookieAccept">Allow</button>
+    </div>
+  </div>
+
+  <!-- Privacy & Cookies modal -->
+  <div class="modal-overlay" id="privacyOverlay" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+      <div class="modal-head">
+        <h2 id="privacyTitle" class="modal-title">Privacy &amp; Cookies</h2>
+        <button type="button" class="modal-close" id="privacyClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-updated">Last updated: 2026-09-15</p>
+        <p>CRT Sim uses <strong>PostHog</strong>, a privacy-friendly analytics service, to understand how the tool is used so it can be improved. We keep this to a minimum and never sell your data.</p>
+
+        <h3>Your video stays on your device</h3>
+        <p>CRT Sim is a client-side shader playground. The clip you load is decoded, rendered, and exported <strong>entirely in your browser</strong> — it is never uploaded to us or anyone else. When you export, the file is saved straight to your device. We never receive your video, its contents, or its file name.</p>
+
+        <h3>What we collect</h3>
+        <p>Anonymous usage events only:</p>
+        <ul>
+          <li>That the app loaded, and where you arrived from (referrer / UTM tags)</li>
+          <li>Which effect settings you adjust (scanlines, phosphor, vignette, bloom, curvature) and their values</li>
+          <li>Aspect-ratio changes and crop / reset actions</li>
+          <li>That a video was loaded — its <strong>format, extension, size, dimensions, and duration</strong>, but never the file itself or its name</li>
+          <li>When you save or load an effect preset</li>
+          <li>Export actions — the chosen format and codec, clip length, and whether the export finished, was stopped, or failed</li>
+          <li>Clicks on the GitHub, Ko-fi, Twitch, and X links</li>
+          <li>Errors, so broken states can be found and fixed</li>
+        </ul>
+
+        <h3>What we do NOT collect</h3>
+        <ul>
+          <li>Your video, its frames, its audio, or its file name are never sent</li>
+          <li>No session recording, no keystrokes, no personal profiles</li>
+          <li>We don't sell or share your data</li>
+        </ul>
+
+        <h3>Cookies &amp; your choice</h3>
+        <p>Analytics uses first-party cookies (and local storage) to recognise return visits. You choose whether to allow them — rejecting means no analytics cookies are set and nothing is captured. You can change your mind any time right here:</p>
+        <div class="cookie-actions modal-consent">
+          <span class="consent-state" id="consentState"></span>
+          <button type="button" class="cookie-btn cookie-reject" id="modalReject">Reject</button>
+          <button type="button" class="cookie-btn cookie-accept" id="modalAccept">Accept</button>
+        </div>
+
+        <h3>Questions?</h3>
+        <p>Reach out any time at <a class="modal-mail" href="mailto:hey@sidkapahi.com">hey@sidkapahi.com</a>.</p>
+
+        <p class="modal-fine">Analytics is processed by PostHog on our behalf. This notice is provided in good faith and isn't legal advice.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terms of Service modal -->
+  <div class="modal-overlay" id="tosOverlay" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="tosTitle">
+      <div class="modal-head">
+        <h2 id="tosTitle" class="modal-title">Terms of Service</h2>
+        <button type="button" class="modal-close" id="tosClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-updated">Last updated: 2026-09-15</p>
+
+        <h3>The short version</h3>
+        <p>CRT Sim is free, open source software provided as is under the MIT License. It runs entirely in your browser. There are no accounts, no subscriptions, and no fees.</p>
+
+        <h3>Acceptance</h3>
+        <p>These terms are a legal agreement between you and the CRT Sim project ("CRT Sim", "we") covering the app and the source published at <a href="https://github.com/sidkapahi/crt-sim" target="_blank" rel="noopener">github.com/sidkapahi/crt-sim</a>. By using CRT Sim, you accept these terms. If you do not agree, do not use it.</p>
+
+        <h3>The software and your license</h3>
+        <p>CRT Sim is released under the <a href="https://github.com/sidkapahi/crt-sim/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>. That license governs your right to use, copy, modify, and distribute the software, and it prevails if anything here appears to conflict with it. You may run CRT Sim for personal or commercial use at no cost.</p>
+
+        <h3>Your content is your responsibility</h3>
+        <p>CRT Sim processes video you choose to load. That video is handled entirely in your browser and is never uploaded to us. You are responsible for having the rights to any clip you load and process, and for how you use the footage you export. Do not use CRT Sim to process content you are not entitled to use.</p>
+        <p>CRT Sim is an independent project and is not affiliated with, endorsed by, or sponsored by any browser, codec, or platform vendor. All product names and logos are the property of their respective owners.</p>
+
+        <h3>Acceptable use</h3>
+        <p>Use CRT Sim lawfully and only with content you are entitled to access. Do not use it to infringe anyone's rights or to violate any applicable law. You are responsible for how you use and distribute the exports it produces.</p>
+
+        <h3>No warranty</h3>
+        <p>CRT Sim is provided "as is" and "as available", without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement. We do not warrant that the app will be uninterrupted or error free, or that exports will always succeed, since they depend on your browser's WebGL and WebCodecs support, which is outside our control.</p>
+
+        <h3>Limitation of liability</h3>
+        <p>To the maximum extent permitted by law, in no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with CRT Sim or the use of or other dealings in it. Because the tool is free, you assume responsibility for how you use it.</p>
+
+        <h3>Privacy</h3>
+        <p>How CRT Sim handles data is described in the <a href="#" id="tosPrivacyLink">Privacy &amp; Cookies</a> notice, which is part of these terms.</p>
+
+        <h3>Changes to these terms</h3>
+        <p>These terms may be updated as the tool evolves. The current version is always posted here with the "last updated" date above. Continuing to use CRT Sim after a change means you accept the revised terms.</p>
+
+        <h3>Contact</h3>
+        <p>Questions about these terms? Email <a class="modal-mail" href="mailto:hey@sidkapahi.com">hey@sidkapahi.com</a>, or open an issue on <a href="https://github.com/sidkapahi/crt-sim/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+
+        <p class="modal-fine">This notice is provided in good faith and isn't legal advice.</p>
+      </div>
+    </div>
+  </div>
 
 </div>
 
@@ -1197,6 +1323,87 @@
     alert('Your browser lacks the WebCodecs encoder needed for '+target.toUpperCase()+' (try Chrome/Edge). Exporting WebM instead.');
     exportFmt='webm'; startWebM();
   });
+
+  // ---- cookie consent (banner + Privacy & Cookies / Terms of Service modals) ----
+  // Analytics is opted out by default (see the PostHog init in <head>); it only
+  // captures once the visitor clicks Accept. The choice is stored locally so the
+  // banner isn't shown again on return visits, and is mirrored to PostHog's own
+  // opt-in/opt-out so capture is gated even before array.js finishes loading.
+  var CONSENT_KEY='crtsim_analytics_consent';
+  function consentStatus(){
+    try{ var v=localStorage.getItem(CONSENT_KEY); return (v==='granted'||v==='denied')?v:'pending'; }catch(e){ return 'pending'; }
+  }
+  function applyConsent(status){
+    try{
+      if(!window.posthog) return;
+      if(status==='granted' && typeof posthog.opt_in_capturing==='function'){ posthog.opt_in_capturing(); }
+      else if(status==='denied' && typeof posthog.opt_out_capturing==='function'){ posthog.opt_out_capturing(); }
+    }catch(e){}
+  }
+  function mountConsent(){
+    var banner=document.getElementById('cookieBanner');
+    var privacyOverlay=document.getElementById('privacyOverlay');
+    var tosOverlay=document.getElementById('tosOverlay');
+    var stateEl=document.getElementById('consentState');
+    var modalAccept=document.getElementById('modalAccept');
+    var modalReject=document.getElementById('modalReject');
+
+    // Reflect the saved choice in the modal: label it and mark the active button.
+    function refreshState(){
+      var s=consentStatus();
+      stateEl.textContent = s==='granted' ? "You've allowed analytics cookies."
+        : s==='denied' ? "You've rejected analytics cookies."
+        : 'No choice made yet.';
+      var accepted=s==='granted', rejected=s==='denied';
+      modalAccept.classList.toggle('is-active',accepted);
+      modalReject.classList.toggle('is-active',rejected);
+      modalAccept.setAttribute('aria-pressed',String(accepted));
+      modalReject.setAttribute('aria-pressed',String(rejected));
+    }
+    function openPrivacy(){ refreshState(); privacyOverlay.hidden=false; }
+    function closePrivacy(){ privacyOverlay.hidden=true; }
+    function openTos(){ tosOverlay.hidden=false; }
+    function closeTos(){ tosOverlay.hidden=true; }
+
+    // Applies a choice: store it, gate PostHog, hide the banner. The choice is
+    // only ever made by explicitly clicking Accept or Reject.
+    function decide(accepted){
+      var status=accepted?'granted':'denied';
+      try{ localStorage.setItem(CONSENT_KEY,status); }catch(e){}
+      applyConsent(status);
+      banner.hidden=true;
+      refreshState();
+    }
+
+    document.getElementById('cookieAccept').addEventListener('click',function(){ decide(true); });
+    document.getElementById('cookieReject').addEventListener('click',function(){ decide(false); });
+    document.getElementById('cookiePrivacy').addEventListener('click',openPrivacy);
+    modalAccept.addEventListener('click',function(){ decide(true); });
+    modalReject.addEventListener('click',function(){ decide(false); });
+    document.getElementById('privacyClose').addEventListener('click',closePrivacy);
+    document.getElementById('tosClose').addEventListener('click',closeTos);
+
+    // Footer legal links open the matching modal.
+    var pLink=document.getElementById('b_privacy');
+    if(pLink){ pLink.addEventListener('click',function(e){ e.preventDefault(); openPrivacy(); }); }
+    var tLink=document.getElementById('b_terms');
+    if(tLink){ tLink.addEventListener('click',function(e){ e.preventDefault(); openTos(); }); }
+    // "Privacy & Cookies" cross-link inside the Terms modal.
+    document.getElementById('tosPrivacyLink').addEventListener('click',function(e){ e.preventDefault(); closeTos(); openPrivacy(); });
+
+    // Click the backdrop or press Escape to close whichever modal is open.
+    privacyOverlay.addEventListener('click',function(e){ if(e.target===privacyOverlay) closePrivacy(); });
+    tosOverlay.addEventListener('click',function(e){ if(e.target===tosOverlay) closeTos(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closePrivacy(); closeTos(); } });
+
+    // Re-apply the stored choice to PostHog on load, and show the banner until
+    // an explicit choice is made (nothing on return visits).
+    var current=consentStatus();
+    if(current!=='pending'){ applyConsent(current); }
+    else { banner.hidden=false; }
+    refreshState();
+  }
+  mountConsent();
 
   // ---- boot ----
   updateEffectUI();

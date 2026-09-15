@@ -296,3 +296,94 @@ canvas{ display:block; width:min(var(--availW), calc(var(--availH) * var(--ar)))
   .layout{ grid-template-columns:1fr; }
   .stage{ min-height:52vh; }
 }
+
+/* ================= CONSENT UI ================= */
+/* Cookie banner + Privacy & Cookies / Terms of Service modals, ported from
+   cs2widget.kapkit.ca (kapkit-cs2overlay) and themed to CRT Sim's amber accent. */
+
+/* ---- Cookie consent banner (a card pinned to the bottom-left corner) ---- */
+.cookie-banner{
+  position:fixed;
+  left:calc(var(--pad) + 8px);
+  bottom:calc(var(--pad) + 8px + env(safe-area-inset-bottom, 0px));
+  width:min(calc(var(--leftw) - 16px), calc(100vw - var(--pad)*2 - 16px));
+  z-index:90; /* under the modal overlay (z-index:100) */
+  display:flex; flex-direction:column; gap:16px;
+  padding:18px;
+  background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius);
+  box-shadow:0 16px 40px rgba(0,0,0,0.55);
+}
+.cookie-banner[hidden]{ display:none; }
+.cookie-logo{ align-self:flex-start; height:26px; width:auto; max-width:100%; display:block; }
+.cookie-copy{ display:flex; flex-direction:column; gap:6px; }
+.cookie-title{ margin:0; font-family:var(--font-ui); font-weight:700; font-size:18px; letter-spacing:-0.01em; line-height:1.1; color:var(--text); }
+.cookie-text{ margin:0; font-size:13px; line-height:1.5; color:var(--text-dim); }
+/* Underlined link under the copy; opens the Privacy & Cookies modal. */
+.cookie-privacy{
+  align-self:flex-start; background:none; border:none; padding:0; cursor:pointer;
+  font-family:var(--font-ui); font-size:12px; color:var(--text-dim);
+  text-decoration:underline; text-underline-offset:2px; transition:color var(--t);
+}
+.cookie-privacy:hover{ color:var(--text); }
+.cookie-actions{ display:flex; gap:8px; flex-shrink:0; justify-content:flex-end; margin-left:auto; }
+.cookie-btn{
+  cursor:pointer; font-family:var(--font-ui); font-weight:600; font-size:13px;
+  padding:8px 16px; border-radius:var(--radius-sm); border:1px solid var(--card-border);
+  transition:filter var(--t), background var(--t), color var(--t);
+}
+.cookie-reject{ background:transparent; color:var(--text-dim); }
+.cookie-reject:hover{ color:var(--text); background:rgba(255,255,255,0.04); }
+.cookie-accept{ background:var(--amber); border-color:var(--amber); color:#191919; }
+.cookie-accept:hover{ filter:brightness(1.08); }
+/* In the banner the reject choice is a solid dark button (the modal keeps the
+   transparent .cookie-reject above). */
+.cookie-banner .cookie-reject{ background:var(--field); color:var(--text); }
+.cookie-banner .cookie-reject:hover{ background:#1a1a1a; }
+/* Banner-specific: the two choices share the bottom row as equal, uppercase halves. */
+.cookie-banner .cookie-actions{ gap:10px; margin-left:0; margin-top:2px; }
+.cookie-banner .cookie-btn{ flex:1; padding:10px 12px; text-transform:uppercase; letter-spacing:0.04em; }
+/* Selected choice in the Privacy & Cookies modal. */
+.cookie-btn.is-active{ position:relative; box-shadow:0 0 0 2px var(--card), 0 0 0 4px var(--amber); }
+.cookie-reject.is-active{ background:rgba(255,255,255,0.06); color:var(--text); border-color:var(--amber); }
+.cookie-accept.is-active{ border-color:var(--amber); }
+.cookie-btn.is-active::after{ content:"✓"; margin-left:6px; font-size:12px; }
+
+/* ---- Privacy / cookies + terms modal ---- */
+.modal-overlay{
+  position:fixed; inset:0; z-index:100;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  background:rgba(0,0,0,0.65); backdrop-filter:blur(2px);
+}
+.modal-overlay[hidden]{ display:none; }
+.modal-card{
+  width:min(560px,100%); max-height:min(80vh,720px);
+  display:flex; flex-direction:column;
+  background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius);
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+.modal-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 20px; border-bottom:1px solid var(--card-border);
+}
+.modal-title{ margin:0; font-size:18px; font-weight:700; letter-spacing:-0.01em; color:var(--text); }
+.modal-close{
+  background:none; border:none; cursor:pointer; font-size:26px; line-height:1;
+  color:var(--text-dim); padding:0 4px; transition:color var(--t);
+}
+.modal-close:hover{ color:var(--text); }
+.modal-body{ overflow-y:auto; padding:18px 20px 22px; font-size:13.5px; line-height:1.6; color:var(--text-dim); }
+.modal-body h3{ margin:18px 0 6px; font-size:14px; font-weight:700; color:var(--text); }
+.modal-body p{ margin:0 0 10px; }
+.modal-body strong{ color:var(--text); font-weight:700; }
+.modal-body a, .modal-mail{ color:var(--amber); text-decoration:underline; text-underline-offset:2px; }
+.modal-body a:hover, .modal-mail:hover{ filter:brightness(1.15); }
+.modal-body ul{ margin:0 0 10px; padding-left:20px; }
+.modal-body li{ margin-bottom:4px; }
+.modal-updated{ font-size:12px; color:var(--line); }
+.modal-consent{ align-items:center; flex-wrap:wrap; margin:12px 0 18px; }
+.consent-state{ flex:1; min-width:140px; font-size:12px; color:var(--line); }
+.modal-fine{ margin-top:14px; padding-top:12px; border-top:1px solid var(--card-border); font-size:11.5px; color:var(--line); }
+
+@media(max-width:979px){
+  .cookie-banner{ left:var(--pad); right:var(--pad); width:auto; max-width:440px; }
+}
