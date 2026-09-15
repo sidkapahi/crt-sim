@@ -6,7 +6,9 @@
 <title>📺 CRT Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- JetBrains Mono is the fallback UI face until the licensed Stratum2 font
+     files are dropped into assets/fonts/ (see assets/fonts/README.md). -->
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 
 <!-- PostHog analytics. All custom events are prefixed "crtsim_".
@@ -31,7 +33,7 @@
       <div class="head">
         <div class="titleblock">
           <h1>CRT Sim</h1>
-          <p class="tagline">A CRT shader playground. Load a clip, dial in the curve and glow, export it.</p>
+          <p class="tagline">A shader playground. Load a clip, dial in the curve and glow, other settings then export it.</p>
         </div>
         <div class="linkrow">
           <a class="chip-link chip-repo" id="b_github" href="https://github.com/sidkapahi/crt-sim" target="_blank" rel="noopener noreferrer" title="View on GitHub" aria-label="GitHub repository">
@@ -63,16 +65,16 @@
           <h2 class="sectlabel">EFFECTS</h2>
           <button class="reset-link" id="b_reset" title="Reset effects to defaults">RESET TO DEFAULT</button>
         </div>
+        <div class="loadsave">
+          <button class="btn-primary" id="b_loadpreset">LOAD</button>
+          <button class="btn-primary" id="b_savepreset">SAVE</button>
+        </div>
         <div class="sliders">
           <div class="ctl"><div class="ctl-main"><label>SCANLINES</label><input type="range" id="s_scan" min="0" max="100" value="45"></div><input class="num" id="n_scan" type="number" min="0" max="100" step="1" value="45"></div>
           <div class="ctl"><div class="ctl-main"><label>PHOSPHOR</label><input type="range" id="s_mask" min="0" max="100" value="40"></div><input class="num" id="n_mask" type="number" min="0" max="100" step="1" value="40"></div>
           <div class="ctl"><div class="ctl-main"><label>VIGNETTE</label><input type="range" id="s_vig" min="0" max="100" value="45"></div><input class="num" id="n_vig" type="number" min="0" max="100" step="1" value="45"></div>
           <div class="ctl"><div class="ctl-main"><label>BLOOM</label><input type="range" id="s_bloom" min="0" max="100" value="60"></div><input class="num" id="n_bloom" type="number" min="0" max="100" step="1" value="60"></div>
           <div class="ctl"><div class="ctl-main"><label>CURVE</label><input type="range" id="s_curve" min="0" max="100" value="0"></div><input class="num" id="n_curve" type="number" min="0" max="100" step="1" value="0"></div>
-        </div>
-        <div class="loadsave">
-          <button class="btn-primary" id="b_loadpreset">LOAD</button>
-          <button class="btn-primary" id="b_savepreset">SAVE</button>
         </div>
       </section>
     </div>

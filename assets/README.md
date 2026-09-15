@@ -24,6 +24,13 @@ Tips:
 - Keep each SVG's `viewBox` so it scales cleanly.
 - `kapkit.png` is shown ~30px tall on a dark background; its wordmark is white.
 
+## `fonts/` — the Stratum2 UI typeface
+
+The UI is set in **Stratum2**, a licensed font that isn't committed here. Drop
+your licensed `.woff2` / `.woff` files into `fonts/` using the exact names in
+[`fonts/README.md`](fonts/README.md). Until then the UI falls back to
+`JetBrains Mono`, so nothing looks broken.
+
 ## `icons/` — functional UI glyphs (optional override)
 
 The functional interface glyphs (upload, download, crop, play/pause, volume,
