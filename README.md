@@ -49,28 +49,13 @@ account, nothing to install.**
 
 ## How-To Guide
 
-### 1. Get it running
-
-There's no hosted version yet — you run the page yourself. It's a single static
-page, so any local web server works:
-
-```bash
-git clone https://github.com/sidkapahi/crt-sim.git
-cd crt-sim
-python3 -m http.server 8000
-# then open http://localhost:8000
-```
-
-*(A local server is recommended over opening the file directly — GIF export and
-some library loading behave better over `http://`.)*
-
-### 2. Load a clip
+### 1. Load a clip
 
 Click **Upload** and pick an `.mp4`, `.webm` or `.mov` — or leave the built-in
 **test pattern** on to dial things in first. Use the **4:3 / 16:9** toggle to
 match your source.
 
-### 3. Tune the look
+### 2. Tune the look
 
 Toggle each effect on or off and drag its slider (or type a number, 0–100):
 
@@ -83,13 +68,13 @@ Toggle each effect on or off and drag its slider (or type a number, 0–100):
 Hit **Reset** to return the effects to their defaults. Happy with a look? Use
 **Save** to store it as a preset, and **Load** to bring it back later.
 
-### 4. Frame it
+### 3. Frame it
 
 - **Crop** — drag the crop box to reframe; it stays locked to your aspect ratio
 - **Trim** — set the in/out points so the export covers only the part you want
 - **Audio** — mute or set the preview volume from the media bar
 
-### 5. Export
+### 4. Export
 
 Pick a format chip and export:
 
