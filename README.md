@@ -15,7 +15,7 @@ then crop, trim and export it to MP4, MOV or GIF. All in your browser.
 
 <br/>
 
-<a href="https://crtsim.com?utm_source=github&utm_medium=readme"><img src="assets/open-app-button.svg" alt="Open CRT Sim" height="54"></a>
+<a href="https://crtsim.com?utm_source=github&utm_medium=readme"><img src="assets/use-now-button.svg" alt="Use now" height="54"></a>
 
 <br/>
 
