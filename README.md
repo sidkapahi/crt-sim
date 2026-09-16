@@ -27,9 +27,8 @@ then crop, trim and export it to MP4, MOV or GIF. All in your browser.
 
 ## Overview
 
-CRT Simulator is a browser-based playground for the retro CRT / OLED look. Load
-a clip (or start from the built-in test pattern), tune the effects live, frame
-it with crop and trim, and export a finished file — MP4, MOV or GIF.
+CRT Simulator is a browser-based playground for the retro CRT look. Load
+a clip, tune the effects live, frame it with crop and trim, and export a finished file — MP4, MOV or GIF.
 
 Everything runs on your own machine. **No files are uploaded anywhere, no
 account, nothing to install.**
