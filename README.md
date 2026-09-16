@@ -103,7 +103,3 @@ single `index.html`, with all styling in `styles.css`. Edit, serve, refresh.
 ## License
 
 [MIT](LICENSE) © 2026 Sid
-
----
-
-<p align="center">Designed &amp; Vibe Coded with ♥ in Toronto</p>
