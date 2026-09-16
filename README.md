@@ -5,7 +5,7 @@
 
 # CRT Sim
 
-Give any clip that old-TV look — curvature, scanlines, phosphor glow and bloom — <br/>
+Give any clip that old CRT look, curvature, scanlines, phosphor glow and bloom — <br/>
 then crop, trim and export it to MP4, MOV or GIF. All in your browser.
 
 [![license MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
