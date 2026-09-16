@@ -3,7 +3,7 @@
 <!-- Header image goes here — drop your file at assets/header.png -->
 <img src="assets/header.png" alt="CRT Simulator" width="100%" />
 
-# CRT Simu
+# CRT Sim
 
 Give any clip that old-TV look — curvature, scanlines, phosphor glow and bloom — <br/>
 then crop, trim and export it to MP4, MOV or GIF. All in your browser.
